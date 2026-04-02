@@ -1,0 +1,235 @@
+{
+  "main": {
+    "id": "e9b0b765dbb7cdc5",
+    "type": "split",
+    "children": [
+      {
+        "id": "cc1a3287fc0e69fa",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "aeb50aae4166d506",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "新标签页"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "f71295f0e8b9b97f",
+    "type": "split",
+    "children": [
+      {
+        "id": "9c54ccf348e1bb98",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "5850c2d500c85b51",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "4f24608584a74faa",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "bc93d5afbbbc429b",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 291.5
+  },
+  "right": {
+    "id": "d341770bd2dbc244",
+    "type": "split",
+    "children": [
+      {
+        "id": "72fb539b022c2aeb",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "de34978aba6b488a",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Article/sync.map/Excalidraw/Sync.Map.哈希树.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Sync.Map.哈希树 的反向链接列表"
+            }
+          },
+          {
+            "id": "b4d71746b1e0b7fa",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Article/sync.map/Excalidraw/Sync.Map.哈希树.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Sync.Map.哈希树 的出链列表"
+            }
+          },
+          {
+            "id": "1550d39890dd0e52",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "1f56d46ac3c4c582",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "添加笔记属性"
+            }
+          },
+          {
+            "id": "911f521857a45b18",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Article/sync.map/Excalidraw/Sync.Map.哈希树.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Sync.Map.哈希树 的大纲"
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "horizontal",
+    "width": 472.5,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "bases:新建数据库": false,
+      "obsidian-excalidraw-plugin:New drawing": false,
+      "claudian:Open Claudian": false
+    }
+  },
+  "active": "aeb50aae4166d506",
+  "lastOpenFiles": [
+    "Article/同步原语/excalidraw-tip.md",
+    "Article/go关键字/Go关键字.md",
+    "Article/go关键字/Excalidraw/selectgo.主路径.png",
+    "Article/go关键字/Excalidraw/selectgo.主路径.md",
+    "Article/go关键字/Excalidraw/selectgo.主路径.json",
+    "Article/go关键字/Excalidraw/_selectgo.json",
+    "Article/go关键字/select源码.md",
+    "Article/go关键字/select.md",
+    "Article/go关键字/excalidraw-tip..md",
+    "Article/channel/channel.表文件.md",
+    "Article/channel/excalidraw/channel.什么时候会被用到.png",
+    "Article/channel/excalidraw/channel.什么时候会被用到.md",
+    "Article/channel/excalidraw/channel.接收流程.png",
+    "Article/channel/excalidraw/channel.常见情况.png",
+    "Article/channel/excalidraw/channel.常见情况.md",
+    "Article/channel/excalidraw/_gen_channel_diagrams.py",
+    "Article/channel/excalidraw/channel.接收流程.md",
+    "Article/channel/channel源码.md",
+    "Article/同步原语/sync.Mutex.md",
+    "Article/内存管理/内存回收源码.md",
+    "Article/内存管理/内存回收源码2.md",
+    "Article/内存管理/内存分配.md",
+    "Article/内存管理/内存分配源码1.md",
+    "Article/内存管理/excalidraw/内存分配.堆分配流程总览.png",
+    "Article/内存管理/excalidraw/内存分配.仓库角色关系总览.png",
+    "Article/内存管理/excalidraw/内存分配.仓库角色关系总览.md",
+    "Article/内存管理/excalidraw/内存分配.堆分配流程总览.md",
+    "Article/内存管理/excalidraw",
+    "tools/excalidraw_memalloc.py",
+    "tools",
+    "Article/内存管理/excali-tip.md",
+    "Article/内存管理/内存分配源码2.md",
+    "Article/内存管理/内存分配源码.md",
+    "Article/内存管理/内存回收.md",
+    "Article/内存管理/垃圾回收.md",
+    "Article/内存管理",
+    "Article/同步原语/同步原语和锁.md",
+    "Article/同步原语/sync.RWMtuex源码.md",
+    "Article/同步原语/excalidraw/sync.Mutex.sema语义.png",
+    "Article/同步原语/excalidraw/sync.Mutex.Unlock流程.png",
+    "Article/同步原语/sync.mutex.md",
+    "Article/同步原语/excalidraw/sync.Mutex.Lock流程.png",
+    "Article/同步原语/excalidraw/sync.Mutex.概览与state.png",
+    "Article/同步原语/excalidraw/_gen_mutex_1md_diagrams.py",
+    "Article/go并发/2",
+    "Article/go并发/草稿.txt",
+    "未命名.canvas"
+  ]
+}
