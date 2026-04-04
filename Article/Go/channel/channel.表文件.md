@@ -21,7 +21,7 @@ close(ch)            // 关闭
 
 ## 什么时候会被用到
 
-![channel.什么时候会被用到](Excalidraw/channel.什么时候会被用到.png)
+![channel.什么时候会被用到](channel.什么时候会被用到.png)
 
 1. 数据传递：两个协程之间传数据
 2. 事件通知：等待某个任务完成
@@ -84,13 +84,13 @@ go func() {
 - 等待队列：当“送不进去/拿不到货”时，就把等着的人挂到 `sendq/recvq` 里；每个等待者用 `sudog` 这个小包表示。
 - `closed`：通道有没有被关闭（关闭后发送会 panic，接收则通过 `ok=false` 告诉你没数据了）。
 
-![channel.数据结构](Excalidraw/channel.Channel数据结构.png)
+![channel.数据结构](channel.Channel数据结构.png)
 
 ---
 
 ## 发送（`ch <- x`）
 值要么立刻送到“正在等接收的人手里”，要么塞进“缓冲区的传送带”，不行就只能等到有机会了。
-![channel.发送流程](Excalidraw/channel.发送流程.png)
+![channel.发送流程](channel.发送流程.png)
 
 1. 先判断通道是否已经关闭：如果 `ch` 已关闭，你继续发送就会立刻 panic。
 2. 通道没关之后，再看有没有接收者在门口等（等待队列 `recvq`）：
@@ -114,7 +114,7 @@ default:
 
 ## 接收（`x := <-ch`）
 值要么来自“正在等着发送的人”，要么来自“缓冲区的传送带”；如果两边都没有货，就看你是否允许阻塞。
-![channel.接收流程](Excalidraw/channel.接收流程.png)
+![channel.接收流程](channel.接收流程.png)
 
 1. 先看有没有等待发送者（队列 `sendq`）：
    - 有：
@@ -142,7 +142,7 @@ _ = v
 
 ## 常见情况
 
-![channel.常见情况](Excalidraw/channel.常见情况.png)
+![channel.常见情况](channel.常见情况.png)
 
 ### 阻塞
 - 在 nil channel 上发送和接收，并且没有select+default，就会进入阻塞流程：

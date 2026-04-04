@@ -39,7 +39,7 @@ func readFile(name string) error {
       os.Exit(1) // 直接让进程退出，所有 defer 都不会执行
   }
   ```
-![defer：LIFO 与 os.Exit](Excalidraw/defer.LIFO与osExit一张图.png)
+![defer：LIFO 与 os.Exit](defer.LIFO与osExit一张图.png)
 
 ---
 
@@ -84,7 +84,7 @@ func safeRun(fn func()) {
   - 发生 panic，但 panic 的值本身就是 `nil`。
 - panic **跨 goroutine 无效**：在一个 goroutine 里 panic，另一个 goroutine 里的 `recover` 捕不到。
 
-![panic 与 recover](Excalidraw/panic与recover.一张图.png)
+![panic 与 recover](panic与recover.一张图.png)
 
 ---
 
@@ -157,7 +157,7 @@ fmt.Println(u.Name, u.Age) // "" 0
   ```go
   s := make([]int, 0, 16)
   ```
-![make 与 new](Excalidraw/make与new.一张图.png)
+![make 与 new](make与new.一张图.png)
 
 ### 3. 总结：什么时候用谁？
 

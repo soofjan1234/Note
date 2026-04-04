@@ -44,7 +44,7 @@ description: 理解 context 的语义与相互关系
 | `WithValue(parent, key, val)` | 增加一层 value 包装 | 不改变取消/截止：完全跟着 parent | `Value(key)`：就近覆盖（先查当前层，再向父链找） |
 
 
-![Excalidraw/context.概览_接口_根节点_构造器](Excalidraw/context.概览_接口_根节点_构造器.png)
+![Excalidraw/context.概览_接口_根节点_构造器](context.概览_接口_根节点_构造器.png)
 
 ---
 
@@ -85,7 +85,7 @@ Value还有个功能：查找最近可取消祖先。当系统需要把“取消
 提示：普通业务只需关心“取消会沿父链传下去”，不需要自己去用 Value 做“最近可取消祖先”的查询。
 
 
-![Excalidraw/context.Value.代码示例_与_向上查找](Excalidraw/context.Value.代码示例_与_向上查找.png)
+![Excalidraw/context.Value.代码示例_与_向上查找](context.Value.代码示例_与_向上查找.png)
 
 ---
 
@@ -118,7 +118,7 @@ func users(ctx context.Context, req *Request) {
 ```
 
 
-![Excalidraw/context.Cancel.心智模型](Excalidraw/context.Cancel.心智模型.png)
+![Excalidraw/context.Cancel.心智模型](context.Cancel.心智模型.png)
 
 ### 5.1 创建可取消的子节点，并接入父链
 当你从一个父上下文创建“可取消”的子上下文时：

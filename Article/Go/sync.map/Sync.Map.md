@@ -23,7 +23,7 @@
 - 内部使用复杂的数据结构实现高性能
 
 
-![Sync.Map.基础概念](Excalidraw/Sync.Map.基础概念.png)
+![Sync.Map.基础概念](Sync.Map.基础概念.png)
 
 ## 核心架构详解
 
@@ -35,7 +35,7 @@
 
 字典树（Trie）是一种通过**前缀**快速匹配的结构。以空间换时间，就像在字典里查“Apple”，你会先找 **A**，再找 **p**。它通过空间换时间，让查找速度只与字符串长度有关，而与字典大小无关。
 
-![字典树.结构图](Excalidraw/字典树.结构图.png)
+![字典树.结构图](字典树.结构图.png)
 
 在最新版 Go 中，`sync.Map` 借鉴了这种思想。它将 Key 的 **哈希值** 当作字符串，构建了一棵高性能的哈希树。
 
@@ -47,7 +47,7 @@
 
 **再小树太深、Load 会慢很多；再大节点太大、收益几乎可以忽略**
 
-![sync.Map.哈希树.结构图](Excalidraw/sync.Map.哈希树.结构图.png)
+![sync.Map.哈希树.结构图](sync.Map.哈希树.结构图.png)
 
 ### 工作原理
 #### 查找流程
@@ -69,7 +69,7 @@
     2. 槽是空的，新增
     3. 槽里有 entry 但 key 不在链里，需要扩展
 
-![sync.Map.添加流程](Excalidraw/sync.Map.添加流程.png)
+![sync.Map.添加流程](sync.Map.添加流程.png)
 
 #### 扩展流程
 
@@ -78,7 +78,7 @@
 1. 两个 key 的完整 hash 相同（真冲突），另一个挂到 overflow 上
 2. 两个 key 的 hash 不同（可以在更低位区分），用 hash 的更低位的 4 位，让 old 和 new 落在不同槽。
 
-![sync.Map.扩展流程](Excalidraw/sync.Map.扩展流程.png)
+![sync.Map.扩展流程](sync.Map.扩展流程.png)
 
 ### 最佳实践
 **不要默认用 sync.Map**
@@ -92,4 +92,4 @@
 | **一写多读**                 | 同一个 key 只写一次，之后大量读          | 只增不减的缓存、配置表            |
 | **多 goroutine 操作不同 key** | 各 goroutine 访问的 key 集合几乎不重叠 | 每个 goroutine 维护自己的 key |
 
-![sync.Map.最佳实践](Excalidraw/sync.Map.最佳实践.png)
+![sync.Map.最佳实践](sync.Map.最佳实践.png)
