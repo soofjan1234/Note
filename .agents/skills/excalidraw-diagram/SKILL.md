@@ -7,20 +7,16 @@ description: Draw Excalidraw diagrams to local .md files (Obsidian format) using
 
 根据文字内容**在内存中设计图表**，并**用 Write 工具将结果写入本地 .md 文件**（Obsidian Excalidraw 格式）。
 
-## 手写 JSON vs 脚本生成（策略）
+## 生成策略：强制使用 Python 脚本
 
-目标只有一条：**最终交付可打开的 Obsidian Excalidraw `.md`**。达成方式可以二选一或组合，**以用户偏好为准**。
+为了保证图表布局的精确性（尤其是坐标计算和折线箭头）并确保生成合法的 JSON 数据，**必须使用 Python 脚本** 生成 Excalidraw 数据。
 
-| 方式 | 适用 | 说明 |
-|------|------|------|
-| **Write 直写** | 元素少、结构简单 | 在对话里拼好 `elements`，用 Write 写入完整 `.md`，最少中间环节。 |
-| **Python 等短脚本** | 元素多、重复排版、折线箭头 `points` 易错 | 用语义化的布局代码生成合法 JSON，再嵌入「Output Formats」模板；**用 Write 落盘 `.md`。** 可降低漏字段、坐标算错、逗号错误。 |
+**操作要求：**
+- **布局逻辑**：使用语义化的 Python 代码处理坐标计算、自动换行和对齐。
+- **落盘方式**：脚本生成 JSON 后，将其嵌入到「Output Formats」模板中，并**最终由 Write 工具**写入本地 `.md` 文件。
+- **脚本留存**：临时生成的绘图脚本建议放在 `scripts/` 或 `tools/` 目录下，以便后续修改维护。
+- **规范遵循**：脚本输出必须严格遵守下文的 Design Rules 和 Element Template。
 
-约定：
-
-- **用户说不要脚本**：只使用 Write / StrReplace，不在仓库里新增 `.py`。
-- **用户说可以用 py 减负**：允许临时或保留短脚本；**优先**放在 `tools/`、`scripts/` 等非笔记正文目录，或与用户约定路径；**读者主要看 `.md`**，脚本视为可选维护工具。
-- **无论是否用脚本**：须遵守下文 Design Rules、Element Template、`%%` + `json` 封装；生成后应在 Obsidian 里打开抽查一层，避免插件不兼容字段。
 
 ## 输出方式
 
@@ -32,7 +28,7 @@ description: Draw Excalidraw diagrams to local .md files (Obsidian format) using
 
 1. 分析内容，确定概念、关系、层级
 2. 根据「Diagram Types & Selection Guide」选择图表类型
-3. 在内存中「设计」布局与元素列表；`elements` JSON 可手写，也可用 **经用户同意的** 短脚本生成，但必须符合 Element Template
+3. 在内存中「设计」布局与元素列表；必须使用脚本生成符合 Element Template 的 `elements` JSON，严禁手写以防逻辑与排版错误。
 4. **用 Write 工具**将 Obsidian 格式的 .md 写入本地路径（见「Output Formats」）
 5. 回复中说明保存路径、文件名，以及所用图表类型
 
@@ -282,7 +278,7 @@ See [references/excalidraw-schema.md](references/excalidraw-schema.md) for all e
 - 按 Design Rules、Color Palette、Element Template 设计好所有元素
 - 组装为完整的 `{ type, version, source, elements, appState, files }` JSON
 - 能写成 Mermaid 的图可先构思结构，再转为对应 elements（箭头、矩形、文本等）
-- **大图 / 易错时**：可用 Python 等脚本生成 JSON，减少手写错误；生成后在回复中说明是否保留脚本及路径（以用户意愿为准）
+- **脚本化生成**：统一使用 Python 等脚本生成 JSON。通过语义化布局代码控制坐标，减少排版错误并简化后期维护。生成后在回复中说明脚本路径。
 
 #### 3. 用 Write 写入 .md
 - 路径：`{当前目录}/Excalidraw/[主题].[类型].md`（若项目里已存在 `excalidraw/` 或 `Excalidraw/`，优先复用现有目录大小写）
