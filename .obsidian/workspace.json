@@ -11,14 +11,10 @@
             "id": "aeb50aae4166d506",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Article/Go/go并发/GMP由来.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "GMP由来"
+              "title": "新标签页"
             }
           }
         ]
@@ -78,7 +74,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 288.5
+    "width": 291.5
   },
   "right": {
     "id": "d341770bd2dbc244",
@@ -94,7 +90,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Article/Go/go并发/GMP由来.md",
+                "file": "Article/sync.map/Excalidraw/Sync.Map.哈希树.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +100,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "GMP由来 的反向链接列表"
+              "title": "Sync.Map.哈希树 的反向链接列表"
             }
           },
           {
@@ -113,12 +109,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Article/Go/go并发/GMP由来.md",
-                "linksCollapsed": true,
-                "unlinkedCollapsed": false
+                "file": "Article/sync.map/Excalidraw/Sync.Map.哈希树.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "GMP由来 的出链列表"
+              "title": "Sync.Map.哈希树 的出链列表"
             }
           },
           {
@@ -165,7 +161,8 @@
               "title": "Sync.Map.哈希树 的大纲"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -181,57 +178,58 @@
       "templates:插入模板": false,
       "command-palette:打开命令面板": false,
       "bases:新建数据库": false,
-      "obsidian-excalidraw-plugin:New drawing": false
+      "obsidian-excalidraw-plugin:New drawing": false,
+      "claudian:Open Claudian": false
     }
   },
-  "active": "aeb50aae4166d506",
+  "active": "5850c2d500c85b51",
   "lastOpenFiles": [
-    "Article/Go/go并发/GMP由来.md",
-    "Article/Go/同步原语/sync.Mutex.md",
-    "Article/Go/同步原语/excalidraw/sync.Mutex.sema语义.png",
-    "Article/Go/同步原语/excalidraw/sync.Mutex.Lock流程.png",
-    "Article/Go/同步原语/excalidraw/sync.Mutex.概览与state.png",
-    "Article/Go/同步原语/excalidraw/sync.Mutex.Unlock流程.png",
-    "Article/Go/同步原语/同步原语和锁.md",
-    "Article/MySQL/new/数据一致性/5.2-MVCC多版本并发控制.md",
-    "Article/MySQL/new/数据一致性/5.1-事务模型与ACID.md",
-    "Article/MySQL/new/并发和锁/Excalidraw/4.2-InnoDB.抗衡丢失修改的悲观与乐观机制.md",
+    "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.索引类型全家桶.png",
+    "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.索引类型全家桶.md",
+    "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.索引失效场景汇总.png",
+    "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.索引失效场景汇总.md",
+    "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.Cardinality采样逻辑.png",
+    "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.Cardinality采样逻辑.md",
+    "Article/MySQL/new/索引与优化/Excalidraw/3.1-InnoDB.二级索引回表路径.png",
+    "Article/MySQL/new/索引与优化/Excalidraw/3.1-InnoDB.二级索引回表路径.md",
+    "Article/MySQL/new/索引与优化/Excalidraw/3.1-InnoDB.B+树进化对比.png",
+    "Article/MySQL/new/索引与优化/Excalidraw/3.1-InnoDB.B+树进化对比.md",
     "Article/MySQL/new/并发和锁/Excalidraw/4.2-InnoDB.行锁算法防卫边界图.png",
     "Article/MySQL/new/并发和锁/Excalidraw/4.2-InnoDB.行锁算法防卫边界图.md",
+    "Article/MySQL/new/并发和锁/Excalidraw/4.2-InnoDB.抗衡丢失修改的悲观与乐观机制.png",
+    "Article/MySQL/new/并发和锁/Excalidraw/4.2-InnoDB.抗衡丢失修改的悲观与乐观机制.md",
     "Article/MySQL/new/并发和锁/Excalidraw/4.2-InnoDB.事务高并发四大毒瘤乱象.png",
     "Article/MySQL/new/并发和锁/Excalidraw/4.2-InnoDB.事务高并发四大毒瘤乱象.md",
-    "Article/MySQL/new/并发和锁/Excalidraw/4.1-InnoDB.读写控制与快照模式分流.md",
-    "Article/MySQL/new/并发和锁/Excalidraw/4.1-InnoDB.读写控制与快照模式分流.png",
     "Article/MySQL/new/并发和锁/Excalidraw/4.1-InnoDB.锁的层级与宏观管控图.png",
     "Article/MySQL/new/并发和锁/Excalidraw/4.1-InnoDB.锁的层级与宏观管控图.md",
+    "Article/MySQL/new/并发和锁/Excalidraw/4.1-InnoDB.读写控制与快照模式分流.png",
+    "Article/MySQL/new/并发和锁/Excalidraw/4.1-InnoDB.读写控制与快照模式分流.md",
     "Article/MySQL/new/并发和锁/Excalidraw/4.1-InnoDB.意向锁的‘敲门’效率对比图.png",
     "Article/MySQL/new/并发和锁/Excalidraw/4.1-InnoDB.意向锁的‘敲门’效率对比图.md",
-    "Article/MySQL/new/并发和锁/Excalidraw/4.2-InnoDB.抗衡丢失修改的悲观与乐观机制.png",
-    "Article/MySQL/new/索引与优化/3.2-索引应用与优化.md",
-    "Article/MySQL/new/并发和锁/Excalidraw",
-    "Article/MySQL/new/并发和锁/excalidraw-tip.md",
-    "Article/MySQL/new/索引与优化/3.1-B+树索引原理.md",
-    "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.索引失效场景汇总.md",
-    "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.Cardinality采样逻辑.md",
-    "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.索引类型全家桶.md",
-    "Article/MySQL/new/索引与优化/Excalidraw/3.1-InnoDB.页分裂与合并机制.md",
-    "Article/MySQL/new/索引与优化/Excalidraw/3.1-InnoDB.二级索引回表路径.md",
-    "Article/MySQL/new/索引与优化/Excalidraw/3.1-InnoDB.B+树进化对比.md",
-    "Article/MySQL/new/存储/Excalidraw/2.2-InnoDB.行溢出处理对比图.md",
-    "Article/MySQL/new/索引与优化/Excalidraw",
-    "Article/MySQL/new/索引与优化/excalidraw-tip.md",
+    "Article/MySQL/new/存储引擎/Excalidraw/1.3-InnoDB.辅助特性展示卡片.md",
+    "Article/MySQL/new/存储引擎/Excalidraw/1.3-InnoDB.Doublewrite双写自救图.md",
+    "Article/MySQL/new/存储引擎/Excalidraw/1.3-InnoDB.ChangeBuffer流转图.md",
+    "Article/MySQL/new/存储引擎/Excalidraw/1.2-InnoDB.内存与后台线程总览图.md",
+    "Article/MySQL/new/存储引擎/Excalidraw/1.2-InnoDB.LRU冷热区淘汰机制.md",
+    "Article/MySQL/new/存储引擎/Excalidraw/1.2-InnoDB.Checkpoint触发机制图.md",
     "Article/MySQL/new/存储/Excalidraw/2.2-InnoDB.行记录结构排布图.md",
-    "Article/MySQL/new/存储/Excalidraw/2.1-InnoDB.数据页微观解剖图.md",
+    "Article/MySQL/new/存储/Excalidraw/2.2-InnoDB.行溢出处理对比图.md",
     "Article/MySQL/new/存储/Excalidraw/2.1-InnoDB.物理存储层级图.md",
-    "Article/MySQL/new/存储引擎/1.3-InnoDB关键特性原理解析.md",
+    "Article/MySQL/new/存储/Excalidraw/2.1-InnoDB.数据页微观解剖图.md",
+    "Article/MySQL/new/索引与优化/excalidraw-tip.md",
+    "Article/MySQL/new/索引与优化/Excalidraw",
+    "Article/MySQL/new/索引与优化/3.2-索引应用与优化.md",
+    "Article/MySQL/new/索引与优化/3.1-B+树索引原理.md",
+    "Article/MySQL/new/日志/6.4-核心串联：一条更新语句的完整流程.md",
+    "Article/MySQL/new/并发和锁/Excalidraw",
+    "Article/MySQL/new/存储引擎/Excalidraw",
     "Article/MySQL/new/存储/Excalidraw",
-    "Article/MySQL/old",
-    "Article/MySQL",
-    "Article/Go",
-    "Article/内存管理/_split_gc_notes.py",
-    "Article/Go/go关键字/Excalidraw/selectgo.主路径.json",
-    "Article/go关键字/Excalidraw/_selectgo.json",
-    "Article/Go/channel/excalidraw/_gen_channel_diagrams.py",
+    "Article/MySQL/new/索引与优化",
+    "Article/MySQL/new/日志",
+    "Article/MySQL/new/并发和锁",
+    "Article/MySQL/new/数据一致性",
+    "Article/MySQL/new/存储引擎",
+    "Article/MySQL/new/存储",
     "未命名.canvas"
   ]
 }
