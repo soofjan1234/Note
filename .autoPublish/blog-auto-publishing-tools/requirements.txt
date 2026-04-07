@@ -1,0 +1,6 @@
+selenium
+pyyaml
+pyperclip
+requests
+pillow
+pywin32
