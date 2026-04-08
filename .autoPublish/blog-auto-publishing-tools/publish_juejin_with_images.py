@@ -8,6 +8,12 @@ import pyperclip
 import selenium
 from selenium import webdriver
 from selenium.webdriver import Keys, ActionChains
+from selenium.common.exceptions import (
+    InvalidSessionIdException,
+    NoSuchWindowException,
+    TimeoutException,
+    WebDriverException,
+)
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
@@ -288,7 +294,58 @@ def init_driver(common_config):
     return driver
 
 
-def publish_juejin_with_images(driver, content=None):
+def open_new_tab_safe(driver):
+    """
+    Open a new tab robustly across Selenium/Chrome edge cases.
+    """
+    try:
+        # Ensure current context is a live window.
+        handles = driver.window_handles
+        if handles:
+            driver.switch_to.window(handles[-1])
+    except Exception:
+        pass
+
+    try:
+        driver.switch_to.new_window("tab")
+        return
+    except Exception:
+        pass
+
+    before_handles = list(driver.window_handles)
+    if not before_handles:
+        raise NoSuchWindowException("no window handles available")
+    driver.execute_script("window.open('about:blank','_blank');")
+    WebDriverWait(driver, 5).until(lambda d: len(d.window_handles) > len(before_handles))
+    driver.switch_to.window(driver.window_handles[-1])
+
+
+def goto_juejin_editor(driver, site, wait, max_retry=2):
+    """
+    Open creator home and enter editor page robustly.
+    """
+    for attempt in range(1, max_retry + 1):
+        driver.get(site)
+        time.sleep(2)
+        wait.until(EC.presence_of_element_located((By.CLASS_NAME, "send-button")))
+        driver.find_element(By.CLASS_NAME, "send-button").click()
+        time.sleep(2)
+        driver.switch_to.window(driver.window_handles[-1])
+        try:
+            wait.until(
+                EC.presence_of_element_located(
+                    (By.XPATH, f'//input[@placeholder="{TITLE_PLACEHOLDER}"]')
+                )
+            )
+            return
+        except TimeoutException:
+            if attempt < max_retry:
+                print(f"Editor not ready, retry entering editor ({attempt}/{max_retry})...")
+                continue
+            raise
+
+
+def publish_juejin_with_images(driver, content=None, title_override=None, summary_override=None):
     juejin_config = read_juejin()
     common_config = read_common()
     if content:
@@ -297,23 +354,10 @@ def publish_juejin_with_images(driver, content=None):
     front_matter = parse_front_matter(common_config["content"])
     auto_publish = common_config["auto_publish"]
 
-    driver.switch_to.new_window("tab")
-    # 已登录时直接打开创作者中心，无需先到首页再等登录
-    driver.get(juejin_config["site"])
-    time.sleep(2)
-
+    open_new_tab_safe(driver)
     wait = WebDriverWait(driver, 10)
-    # 创作者中心页加载后等待「写文章」按钮，已登录时短时即可出现
-    wait.until(EC.presence_of_element_located((By.CLASS_NAME, "send-button")))
-    driver.find_element(By.CLASS_NAME, "send-button").click()
-    time.sleep(2)
-
-    driver.switch_to.window(driver.window_handles[-1])
-    wait.until(
-        EC.presence_of_element_located(
-            (By.XPATH, f'//input[@placeholder="{TITLE_PLACEHOLDER}"]')
-        )
-    )
+    # 已登录时直接打开创作者中心并进入编辑器，超时会自动重试。
+    goto_juejin_editor(driver, juejin_config["site"], wait, max_retry=2)
 
     content_file_path = os.path.abspath(os.path.normpath(common_config["content"]))
 
@@ -354,6 +398,8 @@ def publish_juejin_with_images(driver, content=None):
     title.clear()
     if front_matter and front_matter.get("title"):
         title.send_keys(front_matter["title"])
+    elif title_override:
+        title.send_keys(title_override)
     else:
         title.send_keys(common_config["title"])
     time.sleep(2)
@@ -452,6 +498,8 @@ def publish_juejin_with_images(driver, content=None):
 
     if front_matter and front_matter.get("description"):
         summary = front_matter["description"]
+    elif summary_override:
+        summary = summary_override
     else:
         summary = common_config["summary"]
 
@@ -502,18 +550,82 @@ def save_last_published_file_name(filename):
     write_to_file(filename, "last_published.txt")
 
 
+def normalize_queue_item(item):
+    if isinstance(item, str):
+        return {"content": item, "title": "", "summary": ""}
+    if isinstance(item, dict):
+        return {
+            "content": item.get("content", ""),
+            "title": item.get("title", ""),
+            "summary": item.get("summary", ""),
+        }
+    return {"content": "", "title": "", "summary": ""}
+
+
 def main():
     common_config = read_common()
     driver = init_driver(common_config)
     try:
-        content = common_config.get("content")
-        if not content:
-            content = choose_content(common_config)
-        if not content:
-            print("No article selected. Exiting.")
-            return
-        publish_juejin_with_images(driver, content)
-        save_last_published_file_name(os.path.basename(content))
+        queue = common_config.get("publish_queue", [])
+        if queue:
+            total = len(queue)
+            for idx, raw_item in enumerate(queue, start=1):
+                item = normalize_queue_item(raw_item)
+                content = item["content"]
+                if not content:
+                    print(f"[{idx}/{total}] skipped: empty content")
+                    continue
+                if not os.path.exists(content):
+                    print(f"[{idx}/{total}] skipped: file not found -> {content}")
+                    continue
+
+                print(f"\n[{idx}/{total}] publishing: {content}")
+                try:
+                    publish_juejin_with_images(
+                        driver,
+                        content,
+                        title_override=item["title"],
+                        summary_override=item["summary"],
+                    )
+                except (InvalidSessionIdException, NoSuchWindowException, WebDriverException) as e:
+                    # Chrome debug session may be closed/restarted between articles.
+                    err_msg = str(e).lower()
+                    if (
+                        "invalid session id" in err_msg
+                        or "not connected to devtools" in err_msg
+                        or "no such window" in err_msg
+                        or "web view not found" in err_msg
+                    ):
+                        print("Browser window/session disconnected. Reconnecting to Chrome debug session and retrying...")
+                        try:
+                            driver.quit()
+                        except Exception:
+                            pass
+                        driver = init_driver(common_config)
+                        publish_juejin_with_images(
+                            driver,
+                            content,
+                            title_override=item["title"],
+                            summary_override=item["summary"],
+                        )
+                    else:
+                        raise
+                save_last_published_file_name(os.path.basename(content))
+
+                if idx < total:
+                    next_cmd = input("Press Enter to publish next, or input q to quit: ").strip().lower()
+                    if next_cmd == "q":
+                        print("Stopped by user.")
+                        break
+        else:
+            content = common_config.get("content")
+            if not content:
+                content = choose_content(common_config)
+            if not content:
+                print("No article selected. Exiting.")
+                return
+            publish_juejin_with_images(driver, content)
+            save_last_published_file_name(os.path.basename(content))
     finally:
         driver.quit()
 
