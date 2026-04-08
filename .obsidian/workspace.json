@@ -11,15 +11,60 @@
             "id": "aeb50aae4166d506",
             "type": "leaf",
             "state": {
-              "type": "excalidraw",
+              "type": "markdown",
               "state": {
-                "file": "Article/Go/内存管理/excalidraw/内存泄漏.关系图.md"
+                "file": "Article/Go/go并发/GMP机制.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "excalidraw-icon",
-              "title": "内存泄漏.关系图"
+              "icon": "lucide-file",
+              "title": "GMP机制"
             }
           }
         ]
+      },
+      {
+        "id": "53e4e8996144362b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b5010d87a239b801",
+            "type": "leaf",
+            "state": {
+              "type": "image",
+              "state": {
+                "file": "Article/Go/go并发/excalidraw/GMP机制.GMP关系总览.png"
+              },
+              "icon": "lucide-image",
+              "title": "GMP机制.GMP关系总览"
+            }
+          },
+          {
+            "id": "4275cec475607ba3",
+            "type": "leaf",
+            "state": {
+              "type": "image",
+              "state": {
+                "file": "Article/Go/go并发/excalidraw/GMP机制.findRunnable找G顺序.png"
+              },
+              "icon": "lucide-image",
+              "title": "GMP机制.findRunnable找G顺序"
+            }
+          },
+          {
+            "id": "2930d626110f179b",
+            "type": "leaf",
+            "state": {
+              "type": "image",
+              "state": {
+                "file": "Article/Go/go并发/excalidraw/GMP机制.阻塞与恢复生命周期.png"
+              },
+              "icon": "lucide-image",
+              "title": "GMP机制.阻塞与恢复生命周期"
+            }
+          }
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -76,7 +121,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 291.5
+    "width": 288.5,
+    "collapsed": true
   },
   "right": {
     "id": "d341770bd2dbc244",
@@ -92,7 +138,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Article/sync.map/Excalidraw/Sync.Map.哈希树.md",
+                "file": "Article/Go/go并发/excalidraw/GMP机制.阻塞与恢复生命周期.png",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +148,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Sync.Map.哈希树 的反向链接列表"
+              "title": "GMP机制.阻塞与恢复生命周期 的反向链接列表"
             }
           },
           {
@@ -111,12 +157,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Article/sync.map/Excalidraw/Sync.Map.哈希树.md",
-                "linksCollapsed": false,
-                "unlinkedCollapsed": true
+                "file": "Article/Go/go并发/excalidraw/GMP机制.阻塞与恢复生命周期.png",
+                "linksCollapsed": true,
+                "unlinkedCollapsed": false
               },
               "icon": "links-going-out",
-              "title": "Sync.Map.哈希树 的出链列表"
+              "title": "GMP机制.阻塞与恢复生命周期 的出链列表"
             }
           },
           {
@@ -163,8 +209,7 @@
               "title": "Sync.Map.哈希树 的大纲"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -180,11 +225,10 @@
       "templates:插入模板": false,
       "command-palette:打开命令面板": false,
       "bases:新建数据库": false,
-      "obsidian-excalidraw-plugin:New drawing": false,
-      "claudian:Open Claudian": false
+      "obsidian-excalidraw-plugin:New drawing": false
     }
   },
-  "active": "aeb50aae4166d506",
+  "active": "2930d626110f179b",
   "lastOpenFiles": [
     "Article/Go/内存管理/excalidraw/内存泄漏.关系图.png",
     "Article/Go/内存管理/excalidraw/内存逃逸.流程图.md",
@@ -194,7 +238,15 @@
     "Article/Go/内存管理/scripts/generate_leak_escape_excalidraw.py",
     "Article/Go/内存管理/内存泄漏与逃逸.md",
     "Article/Go/内存管理/excalidraw/写屏障拦截.对比图.md",
+    "Article/Go/内存管理/scripts/gen_gc_diagrams.py",
+    "Article/Go/内存管理/scripts",
+    "Article/Go/内存管理/excalidraw/协作与Assist机制.关系图.png",
     "Article/Go/内存管理/excalidraw/协作与Assist机制.关系图.md",
+    "Article/Go/内存管理/excalidraw/写屏障拦截.对比图.png",
+    "Article/Go/内存管理/excalidraw/写屏障拦截.对比图.md",
+    "Article/Go/内存管理/excalidraw/内存分配.Go进程内存区域总览.png",
+    "Article/Go/内存管理/excalidraw/内存分配.Go进程内存区域总览.md",
+    "Article/Go/内存管理/excalidraw/三色标记原理.关系图.png",
     "Article/Go/内存管理/excalidraw/三色标记原理.关系图.md",
     "Article/Go/内存管理/excalidraw/GC周期总览.时间线.png",
     "Article/Go/内存管理/excalidraw/GC周期总览.时间线.md",
@@ -207,6 +259,15 @@
     "Article/Go/内存管理/scripts/gen_gc_diagrams.py",
     "Article/Go/内存管理/scripts",
     "Article/Go/内存管理/image.png",
+    "Article/Go/go并发/excalidraw/GMP机制.findRunnable找G顺序.png",
+    "Article/Go/go并发/excalidraw/GMP机制.GMP关系总览.png",
+    "Article/Go/go并发/excalidraw/GMP机制.阻塞与恢复生命周期.png",
+    "Article/Go/go并发/GMP机制.md",
+    "Article/Go/go并发/GMP由来.md",
+    "Article/Go/同步原语/sync.Mutex.md",
+    "Article/Go/同步原语/excalidraw/sync.Mutex.sema语义.png",
+    "Article/Go/同步原语/excalidraw/sync.Mutex.Lock流程.png",
+    "Article/Go/同步原语/同步原语和锁.md",
     "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.索引类型全家桶.png",
     "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.索引类型全家桶.md",
     "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.索引失效场景汇总.png",
@@ -215,23 +276,38 @@
     "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.Cardinality采样逻辑.md",
     "Article/MySQL/new/索引与优化/Excalidraw/3.1-InnoDB.二级索引回表路径.md",
     "Article/MySQL/new/索引与优化/Excalidraw/3.1-InnoDB.B+树进化对比.md",
-    "Article/MySQL/new/并发和锁/Excalidraw/4.2-InnoDB.行锁算法防卫边界图.md",
+    "Article/MySQL/new/数据一致性/5.2-MVCC多版本并发控制.md",
+    "Article/MySQL/new/数据一致性/5.1-事务模型与ACID.md",
     "Article/MySQL/new/并发和锁/Excalidraw/4.2-InnoDB.抗衡丢失修改的悲观与乐观机制.md",
+    "Article/MySQL/new/并发和锁/Excalidraw/4.2-InnoDB.行锁算法防卫边界图.md",
     "Article/MySQL/new/并发和锁/Excalidraw/4.2-InnoDB.事务高并发四大毒瘤乱象.md",
-    "Article/MySQL/new/并发和锁/Excalidraw/4.1-InnoDB.锁的层级与宏观管控图.md",
     "Article/MySQL/new/并发和锁/Excalidraw/4.1-InnoDB.读写控制与快照模式分流.md",
+    "Article/MySQL/new/并发和锁/Excalidraw/4.1-InnoDB.锁的层级与宏观管控图.md",
     "Article/MySQL/new/并发和锁/Excalidraw/4.1-InnoDB.意向锁的‘敲门’效率对比图.md",
     "Article/MySQL/new/存储引擎/Excalidraw/1.3-InnoDB.辅助特性展示卡片.md",
     "Article/MySQL/new/存储引擎/Excalidraw/1.3-InnoDB.Doublewrite双写自救图.md",
     "Article/MySQL/new/存储引擎/Excalidraw/1.3-InnoDB.ChangeBuffer流转图.md",
     "Article/MySQL/new/存储引擎/Excalidraw/1.2-InnoDB.内存与后台线程总览图.md",
-    "Article/MySQL/new/索引与优化/Excalidraw",
+    "Article/MySQL/new/索引与优化/3.2-索引应用与优化.md",
     "Article/MySQL/new/并发和锁/Excalidraw",
-    "Article/MySQL/new/存储引擎/Excalidraw",
+    "Article/MySQL/new/并发和锁/excalidraw-tip.md",
+    "Article/MySQL/new/索引与优化/3.1-B+树索引原理.md",
+    "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.索引失效场景汇总.md",
+    "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.Cardinality采样逻辑.md",
+    "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.索引类型全家桶.md",
+    "Article/MySQL/new/索引与优化/Excalidraw/3.1-InnoDB.页分裂与合并机制.md",
+    "Article/MySQL/new/索引与优化/Excalidraw/3.1-InnoDB.二级索引回表路径.md",
+    "Article/MySQL/new/索引与优化/Excalidraw",
     "Article/MySQL/new/存储/Excalidraw",
     "Article/MySQL/new/索引与优化",
     "Article/MySQL/new/日志",
     "Article/MySQL/new/并发和锁",
+    "Article/MySQL/old",
+    "Article/MySQL",
+    "Article/Go",
+    "Article/内存管理/_split_gc_notes.py",
+    "Article/Go/go关键字/Excalidraw/selectgo.主路径.json",
+    "Article/go关键字/Excalidraw/_selectgo.json",
     "未命名.canvas"
   ]
 }
