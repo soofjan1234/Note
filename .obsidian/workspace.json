@@ -13,54 +13,54 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Article/Go/go并发/GMP机制.md",
+                "file": "Article/Go/内存管理/内存分配.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "GMP机制"
+              "title": "内存分配"
             }
           }
         ]
       },
       {
-        "id": "53e4e8996144362b",
+        "id": "3680a9685ea81ff0",
         "type": "tabs",
         "children": [
           {
-            "id": "b5010d87a239b801",
+            "id": "793b15288fbfb68b",
             "type": "leaf",
             "state": {
               "type": "image",
               "state": {
-                "file": "Article/Go/go并发/excalidraw/GMP机制.GMP关系总览.png"
+                "file": "Article/Go/内存管理/excalidraw/内存分配.Go进程内存区域总览.png"
               },
               "icon": "lucide-image",
-              "title": "GMP机制.GMP关系总览"
+              "title": "内存分配.Go进程内存区域总览"
             }
           },
           {
-            "id": "4275cec475607ba3",
+            "id": "d8a349bdee638d73",
             "type": "leaf",
             "state": {
               "type": "image",
               "state": {
-                "file": "Article/Go/go并发/excalidraw/GMP机制.findRunnable找G顺序.png"
+                "file": "Article/Go/内存管理/excalidraw/内存分配.仓库角色关系总览.png"
               },
               "icon": "lucide-image",
-              "title": "GMP机制.findRunnable找G顺序"
+              "title": "内存分配.仓库角色关系总览"
             }
           },
           {
-            "id": "2930d626110f179b",
+            "id": "3c7872b9021998a4",
             "type": "leaf",
             "state": {
               "type": "image",
               "state": {
-                "file": "Article/Go/go并发/excalidraw/GMP机制.阻塞与恢复生命周期.png"
+                "file": "Article/Go/内存管理/excalidraw/内存分配.堆分配流程总览.png"
               },
               "icon": "lucide-image",
-              "title": "GMP机制.阻塞与恢复生命周期"
+              "title": "内存分配.堆分配流程总览"
             }
           }
         ],
@@ -138,7 +138,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Article/Go/go并发/excalidraw/GMP机制.阻塞与恢复生命周期.png",
+                "file": "Article/Go/内存管理/内存分配.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -148,7 +148,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "GMP机制.阻塞与恢复生命周期 的反向链接列表"
+              "title": "内存分配 的反向链接列表"
             }
           },
           {
@@ -157,12 +157,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Article/Go/go并发/excalidraw/GMP机制.阻塞与恢复生命周期.png",
+                "file": "Article/Go/内存管理/内存分配.md",
                 "linksCollapsed": true,
                 "unlinkedCollapsed": false
               },
               "icon": "links-going-out",
-              "title": "GMP机制.阻塞与恢复生命周期 的出链列表"
+              "title": "内存分配 的出链列表"
             }
           },
           {
@@ -228,15 +228,20 @@
       "obsidian-excalidraw-plugin:New drawing": false
     }
   },
-  "active": "2930d626110f179b",
+  "active": "aeb50aae4166d506",
   "lastOpenFiles": [
+    "Article/Go/内存管理/excalidraw/内存分配.堆分配流程总览.png",
+    "Article/Go/内存管理/内存分配.md",
+    "Article/Go/内存管理/excalidraw/内存分配.仓库角色关系总览.png",
+    "Article/Go/内存管理/excalidraw/内存分配.Go进程内存区域总览.png",
+    "Article/Go/go并发/GMP机制.md",
+    "Article/Go/go并发/excalidraw/GMP机制.阻塞与恢复生命周期.png",
     "Article/Go/内存管理/scripts/gen_gc_diagrams.py",
     "Article/Go/内存管理/scripts",
     "Article/Go/内存管理/excalidraw/协作与Assist机制.关系图.png",
     "Article/Go/内存管理/excalidraw/协作与Assist机制.关系图.md",
     "Article/Go/内存管理/excalidraw/写屏障拦截.对比图.png",
     "Article/Go/内存管理/excalidraw/写屏障拦截.对比图.md",
-    "Article/Go/内存管理/excalidraw/内存分配.Go进程内存区域总览.png",
     "Article/Go/内存管理/excalidraw/内存分配.Go进程内存区域总览.md",
     "Article/Go/内存管理/excalidraw/三色标记原理.关系图.png",
     "Article/Go/内存管理/excalidraw/三色标记原理.关系图.md",
@@ -244,12 +249,8 @@
     "Article/Go/内存管理/excalidraw/GC周期总览.时间线.md",
     "Article/Go/go并发/excalidraw/GMP机制.findRunnable找G顺序.png",
     "Article/Go/go并发/excalidraw/GMP机制.GMP关系总览.png",
-    "Article/Go/go并发/excalidraw/GMP机制.阻塞与恢复生命周期.png",
-    "Article/Go/go并发/GMP机制.md",
     "Article/Go/go并发/GMP由来.md",
     "Article/Go/同步原语/sync.Mutex.md",
-    "Article/Go/同步原语/excalidraw/sync.Mutex.sema语义.png",
-    "Article/Go/同步原语/excalidraw/sync.Mutex.Lock流程.png",
     "Article/Go/同步原语/同步原语和锁.md",
     "Article/MySQL/new/数据一致性/5.2-MVCC多版本并发控制.md",
     "Article/MySQL/new/数据一致性/5.1-事务模型与ACID.md",
@@ -267,7 +268,6 @@
     "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.Cardinality采样逻辑.md",
     "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.索引类型全家桶.md",
     "Article/MySQL/new/索引与优化/Excalidraw/3.1-InnoDB.页分裂与合并机制.md",
-    "Article/MySQL/new/索引与优化/Excalidraw/3.1-InnoDB.二级索引回表路径.md",
     "Article/MySQL/new/索引与优化/Excalidraw",
     "Article/MySQL/new/存储/Excalidraw",
     "Article/MySQL/old",
@@ -275,7 +275,6 @@
     "Article/Go",
     "Article/内存管理/_split_gc_notes.py",
     "Article/Go/go关键字/Excalidraw/selectgo.主路径.json",
-    "Article/go关键字/Excalidraw/_selectgo.json",
     "未命名.canvas"
   ]
 }
