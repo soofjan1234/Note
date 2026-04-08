@@ -11,12 +11,12 @@
             "id": "aeb50aae4166d506",
             "type": "leaf",
             "state": {
-              "type": "image",
+              "type": "excalidraw",
               "state": {
-                "file": "Article/Go/内存管理/excalidraw/写屏障拦截.对比图.png"
+                "file": "Article/Go/内存管理/excalidraw/内存泄漏.关系图.md"
               },
-              "icon": "lucide-image",
-              "title": "写屏障拦截.对比图"
+              "icon": "excalidraw-icon",
+              "title": "内存泄漏.关系图"
             }
           }
         ]
@@ -186,6 +186,13 @@
   },
   "active": "aeb50aae4166d506",
   "lastOpenFiles": [
+    "Article/Go/内存管理/excalidraw/内存泄漏.关系图.png",
+    "Article/Go/内存管理/excalidraw/内存逃逸.流程图.md",
+    "Article/Go/内存管理/excalidraw/内存逃逸.流程图.png",
+    "Article/Go/内存管理/excalidraw/写屏障拦截.对比图.png",
+    "Article/Go/内存管理/excalidraw/内存泄漏.关系图.md",
+    "Article/Go/内存管理/scripts/generate_leak_escape_excalidraw.py",
+    "Article/Go/内存管理/内存泄漏与逃逸.md",
     "Article/Go/内存管理/excalidraw/写屏障拦截.对比图.md",
     "Article/Go/内存管理/excalidraw/协作与Assist机制.关系图.md",
     "Article/Go/内存管理/excalidraw/三色标记原理.关系图.md",
@@ -196,7 +203,6 @@
     "Article/Go/内存管理/excalidraw/内存分配.Go进程内存区域总览.md",
     "Article/Go/内存管理/excalidraw/内存分配.Go进程内存区域总览.png",
     "Article/Go/内存管理/excalidraw/三色标记原理.关系图.png",
-    "Article/Go/内存管理/excalidraw/写屏障拦截.对比图.png",
     "Article/Go/内存管理/excalidraw/协作与Assist机制.关系图.png",
     "Article/Go/内存管理/scripts/gen_gc_diagrams.py",
     "Article/Go/内存管理/scripts",
@@ -207,7 +213,6 @@
     "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.索引失效场景汇总.md",
     "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.Cardinality采样逻辑.png",
     "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.Cardinality采样逻辑.md",
-    "Article/MySQL/new/索引与优化/Excalidraw/3.1-InnoDB.二级索引回表路径.png",
     "Article/MySQL/new/索引与优化/Excalidraw/3.1-InnoDB.二级索引回表路径.md",
     "Article/MySQL/new/索引与优化/Excalidraw/3.1-InnoDB.B+树进化对比.md",
     "Article/MySQL/new/并发和锁/Excalidraw/4.2-InnoDB.行锁算法防卫边界图.md",
@@ -220,9 +225,6 @@
     "Article/MySQL/new/存储引擎/Excalidraw/1.3-InnoDB.Doublewrite双写自救图.md",
     "Article/MySQL/new/存储引擎/Excalidraw/1.3-InnoDB.ChangeBuffer流转图.md",
     "Article/MySQL/new/存储引擎/Excalidraw/1.2-InnoDB.内存与后台线程总览图.md",
-    "Article/MySQL/new/存储引擎/Excalidraw/1.2-InnoDB.LRU冷热区淘汰机制.md",
-    "Article/MySQL/new/存储引擎/Excalidraw/1.2-InnoDB.Checkpoint触发机制图.md",
-    "Article/MySQL/new/存储/Excalidraw/2.2-InnoDB.行记录结构排布图.md",
     "Article/MySQL/new/索引与优化/Excalidraw",
     "Article/MySQL/new/并发和锁/Excalidraw",
     "Article/MySQL/new/存储引擎/Excalidraw",
@@ -230,7 +232,6 @@
     "Article/MySQL/new/索引与优化",
     "Article/MySQL/new/日志",
     "Article/MySQL/new/并发和锁",
-    "Article/MySQL/new/数据一致性",
     "未命名.canvas"
   ]
 }
