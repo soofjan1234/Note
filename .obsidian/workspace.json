@@ -230,6 +230,12 @@
   },
   "active": "aeb50aae4166d506",
   "lastOpenFiles": [
+    "Article/Go/内存管理/内存泄漏与逃逸.md",
+    "Article/Go/内存管理/scripts/generate_leak_escape_excalidraw.py",
+    "Article/Go/内存管理/excalidraw/内存逃逸.流程图.png",
+    "Article/Go/内存管理/excalidraw/内存逃逸.流程图.md",
+    "Article/Go/内存管理/excalidraw/内存泄漏.关系图.png",
+    "Article/Go/内存管理/excalidraw/内存泄漏.关系图.md",
     "Article/Go/内存管理/excalidraw/内存分配.堆分配流程总览.png",
     "Article/Go/内存管理/内存分配.md",
     "Article/Go/内存管理/excalidraw/内存分配.仓库角色关系总览.png",
@@ -247,8 +253,6 @@
     "Article/Go/内存管理/excalidraw/三色标记原理.关系图.md",
     "Article/Go/内存管理/excalidraw/GC周期总览.时间线.png",
     "Article/Go/内存管理/excalidraw/GC周期总览.时间线.md",
-    "Article/Go/go并发/excalidraw/GMP机制.findRunnable找G顺序.png",
-    "Article/Go/go并发/excalidraw/GMP机制.GMP关系总览.png",
     "Article/Go/go并发/GMP由来.md",
     "Article/Go/同步原语/sync.Mutex.md",
     "Article/Go/同步原语/同步原语和锁.md",
@@ -266,15 +270,12 @@
     "Article/MySQL/new/索引与优化/3.1-B+树索引原理.md",
     "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.索引失效场景汇总.md",
     "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.Cardinality采样逻辑.md",
-    "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.索引类型全家桶.md",
-    "Article/MySQL/new/索引与优化/Excalidraw/3.1-InnoDB.页分裂与合并机制.md",
     "Article/MySQL/new/索引与优化/Excalidraw",
     "Article/MySQL/new/存储/Excalidraw",
     "Article/MySQL/old",
     "Article/MySQL",
     "Article/Go",
     "Article/内存管理/_split_gc_notes.py",
-    "Article/Go/go关键字/Excalidraw/selectgo.主路径.json",
     "未命名.canvas"
   ]
 }

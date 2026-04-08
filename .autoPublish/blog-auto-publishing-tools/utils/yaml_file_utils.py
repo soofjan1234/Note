@@ -3,6 +3,8 @@ import shutil
 import yaml
 import os
 
+COMMON_OVERRIDE = {}
+
 
 def read_yaml(file, encoding='UTF-8'):
     """
@@ -51,7 +53,28 @@ def read_common():
         shutil.copy(default_file_path, yaml_file_path)
         print(f"已复制 {default_file_path} 到 {yaml_file_path}")
 
-    return read_yaml(yaml_file_path)  # 读取并返回配置文件中的数据
+    data = read_yaml(yaml_file_path)  # 读取并返回配置文件中的数据
+    if isinstance(data, dict) and COMMON_OVERRIDE:
+        data.update(COMMON_OVERRIDE)
+    return data
+
+
+def set_common_override(override):
+    """
+    设置 common.yaml 的临时覆盖字段（仅对当前进程有效）。
+
+    例如在批量发布时，按篇覆盖 title/content/summary。
+    """
+    global COMMON_OVERRIDE
+    COMMON_OVERRIDE = override or {}
+
+
+def clear_common_override():
+    """
+    清理临时覆盖字段，恢复读取原始 common.yaml。
+    """
+    global COMMON_OVERRIDE
+    COMMON_OVERRIDE = {}
 
 def read_common_video():
     """
