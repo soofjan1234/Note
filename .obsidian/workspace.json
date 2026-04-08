@@ -50,21 +50,9 @@
               "icon": "lucide-image",
               "title": "内存分配.仓库角色关系总览"
             }
-          },
-          {
-            "id": "3c7872b9021998a4",
-            "type": "leaf",
-            "state": {
-              "type": "image",
-              "state": {
-                "file": "Article/Go/内存管理/excalidraw/内存分配.堆分配流程总览.png"
-              },
-              "icon": "lucide-image",
-              "title": "内存分配.堆分配流程总览"
-            }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -121,8 +109,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 288.5,
-    "collapsed": true
+    "width": 288.5
   },
   "right": {
     "id": "d341770bd2dbc244",
@@ -230,14 +217,16 @@
   },
   "active": "aeb50aae4166d506",
   "lastOpenFiles": [
+    "Article/Go/内存管理/内存回收.md",
+    "Article/Go/内存管理/excalidraw/内存分配.堆分配流程总览.png",
+    "Article/Go/内存管理/excalidraw/内存分配.堆分配流程总览.md",
+    "Article/Go/内存管理/内存分配.md",
     "Article/Go/内存管理/内存泄漏与逃逸.md",
     "Article/Go/内存管理/scripts/generate_leak_escape_excalidraw.py",
     "Article/Go/内存管理/excalidraw/内存逃逸.流程图.png",
     "Article/Go/内存管理/excalidraw/内存逃逸.流程图.md",
     "Article/Go/内存管理/excalidraw/内存泄漏.关系图.png",
     "Article/Go/内存管理/excalidraw/内存泄漏.关系图.md",
-    "Article/Go/内存管理/excalidraw/内存分配.堆分配流程总览.png",
-    "Article/Go/内存管理/内存分配.md",
     "Article/Go/内存管理/excalidraw/内存分配.仓库角色关系总览.png",
     "Article/Go/内存管理/excalidraw/内存分配.Go进程内存区域总览.png",
     "Article/Go/go并发/GMP机制.md",
@@ -268,8 +257,6 @@
     "Article/MySQL/new/并发和锁/Excalidraw",
     "Article/MySQL/new/并发和锁/excalidraw-tip.md",
     "Article/MySQL/new/索引与优化/3.1-B+树索引原理.md",
-    "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.索引失效场景汇总.md",
-    "Article/MySQL/new/索引与优化/Excalidraw/3.2-InnoDB.Cardinality采样逻辑.md",
     "Article/MySQL/new/索引与优化/Excalidraw",
     "Article/MySQL/new/存储/Excalidraw",
     "Article/MySQL/old",
