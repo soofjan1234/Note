@@ -1,35 +1,106 @@
-# select 配图提示词（严格依据 select.md / select源码.md）
+# interface 配图提示词（严格依据 `interface.md` 文案）
 
-已生成图稿（Obsidian Excalidraw）：Article/go关键字/Excalidraw/selectgo.主路径.md（同目录另有 selectgo.主路径.json 便于脚本复用）。用插件打开该 md 切换 Excalidraw 视图即可编辑。
-
----
-
-以下整段为一张图的提示词，可直接交给绘图 AI。内容须与 select.md、select源码.md 一致，不得编造未出现的运行时细节。
+参考画图skill。
 
 ---
 
-推荐图表类型：单张流程图（自上而下，含少量决策菱形与侧栏注释）。
+## 1. 概览：接口类型 + 隐式实现 + 双分量
 
-版式与风格：参考画图skill。画布约 1200×800，四周留白不少于 50px；浅色填充矩形区分步骤（浅蓝起始、浅绿结束、浅黄决策、浅紫中间步骤）；描边用同色系深色；正文标签不小于 16px；不要使用 Emoji。
+请绘制「interface 概览」心智图，覆盖 `interface.md` **§1、§2**：
 
----
+1. 接口只描述**一组方法**（行为），不关心具体是哪种类型。
+2. 具体类型 `T` 只要方法**同名、同签名**且满足**导出/包可见性**，即**自动**满足接口，无需 `implements`。
+3. 接口值 = **动态类型** + **动态值**；讨论 nil 必须同时想两层。
 
-提示词（单图：selectgo 全路径）
+画面布局建议：
 
-> 画一张中文流程图，一张图内包含主链与两处侧注，标题置顶居中：「select 运行时 selectgo 主路径」。
->
-> 主链自上而下：
-> 1）准备：得到各 case 描述 scases；在栈上缓冲区里生成 pollorder（随机插入，减轻饥饿）与 lockorder（按 channel 地址排序，用于全序加锁防死锁）。
-> 2）sellock：按 lockorder 依次锁住本次涉及的 channel。防止状态被改变
-> 3）pass1：按 pollorder 轮询尝试快路径——接收侧优先「与对端交接、再读缓冲、再判关闭」；发送侧先判关闭再「与对端交接、再写缓冲」；若任一 case 能立刻完成则 selunlock、返回（角落小字注：recvOK 仅对接收 case 有意义）。
-> 4）菱形决策：若存在 default 且 pass1 无人能执行 → selunlock，返回下标负一表示走 default → 结束。
-> 5）若无 default 且 pass1 无人能执行：多路各挂等待项、入队，gopark 睡眠（旁注：休眠前 selparkcommit 释放 channel 锁）。
-> 6）被唤醒后：再次 sellock；从唤醒者给出的信息识别中奖的那一路；沿 lockorder 摘掉其余路上的等待项；selunlock、返回。
->
-> 主图左侧或底部用窄条两格注释放不下主链的概念（不必单独成图）：一格写「pollorder：打乱本轮检查顺序」；一格写「lockorder：按地址加锁顺序」；底注一句「二者分工不同」。
->
-> 不要画函数签名或完整代码；源码级标识如 sudog、gp.param 可改为「等待项」「中奖信息」等口语。
+1. 中心卡片：`interface = 方法集合抽象`。
+2. 一侧画「隐式实现」：`T 的方法 ≡ 接口要求` → `自动满足`。
+3. 另一侧画「双分量」两个并列框：`动态类型`、`动态值`，下方小字：`nil 判断要看整体`。
+
+**输出**：保存为 `Excalidraw/interface.概览_隐式实现_双分量.md`
 
 ---
 
-自检（交付前）：成图后核对是否仅表达上述文档中已有语义；若绘图 AI 擅自加入未约定的包名、函数列表或与其它语言混淆的语法，应删改提示词后重画。
+## 2. 运行时布局：`eface` 与 `iface` + `data` 三种情况
+
+请绘制「接口值在内存里长什么样」对比图，覆盖 `interface.md` **§3.1**（含三个小例子的要点，不必贴大段代码）：
+
+1. **空接口**：`eface = (_type, data)`。
+2. **非空接口**：`iface = (itab, data)`；`itab` 内含类型信息 + 方法跳转表 `Fun[]`。
+3. `data` 三种常见形态：
+   - 值类型装进接口：常指向**接口持有的副本**（改原变量不一定影响接口里那份）。
+   - 指针装进接口：`data` 常是**那根指针**，改指向对象字段可透过接口看到。
+   - 优化路径：小整数、空串、nil slice 等可指向**只读表或零值区**。
+4. **nil 指针装进 `any`**：动态类型已是 `*T`，`data` 为 nil → **接口整体 `!= nil`**，与「空接口 nil」区分（与 §4 呼应，图中可画一条虚线指向下一图）。
+
+画面布局建议：
+
+1. 左右两列大框：`eface` | `iface`，每列两行槽位标注 `_type/itab` 与 `data`。
+2. 下方三个小卡片：`值副本`、`指针`、`静态/优化`，各用短箭头指向 `data` 槽。
+3. 右下角单独小框：`var i any = (*T)(nil)` → 标注「类型非空、data 为空」。
+
+**输出**：保存为 `Excalidraw/interface.eface与iface与data.md`
+
+---
+
+## 3. 构建与调用主线：`convT*` → `getitab` → `itabInit` → `Fun[i]`
+
+请绘制「从赋值到动态派发」**流程图**，覆盖 `interface.md` **§3.2**：
+
+1. **赋值到接口**：可能走 `convT*` 准备 `data`（分配/拷贝/小值优化）。
+2. **需要 `(I,T)` 配对**：走 `getitab(I,T,canfail)`。
+3. **`getitab` 主线**：查全局 `itabTable` → 未命中则加锁再查 → 仍无则分配 `itab` 并 `itabInit` → 插入缓存；`Fun[0]` 表示是否可用。
+4. **`itabInit`**：按接口方法顺序匹配具体类型方法，填 `Fun[]`；失败则返回缺失方法名（图中可用「失败分支」小框）。
+5. **调用**：从 `iface.tab` 取 `itab`，按编译期方法下标取 `Fun[i]`，对 `data` 做间接调用。
+
+画面布局建议：
+
+1. 自上而下泳道式：`赋值/装箱` → `getitab` → `itabInit` → `调用`。
+2. `getitab` 旁画菱形：`itabTable 命中？` → 是则跳过构造；否则进入「加锁 + 构造」。
+3. 最后一步画「查表 + 跳转」：`Fun[i]` 箭头指向「目标函数」。
+
+**输出**：保存为 `Excalidraw/interface.构建主线_getitab_itabInit_派发.md`
+
+---
+
+## 4. 经典坑：空接口 nil vs 装着 nil 指针的接口
+
+请绘制「对比图」，覆盖 `interface.md` **§4**（可配合 `error` 示例语义，不必写完整代码）：
+
+1. `var e1 error` 且未赋值：`e1 == nil` 为 true（**类型与值都空**）。
+2. `var p *MyError; var e2 error = p`：`e2 == nil` 为 false（**动态类型已是 `*MyError`，仅 data 为 nil**）。
+3. 一句结论：对接口做 `== nil` 判的是**整个接口值**是否「未持有任何具体类型」。
+
+画面布局建议：
+
+1. 左右两栏对比：`空 error 接口` vs `装着 nil 指针的 error`。
+2. 每栏画两个小格：`类型槽`、`data 槽`，用颜色区分「空/非空」。
+3. 底部统一结论条：`errors.Is` / `errors.As` 何时更稳妥（关键词即可）。
+
+**输出**：保存为 `Excalidraw/interface.nil接口与nil指针对比.md`
+
+---
+
+## 5. `any`、类型断言与 `type switch`
+
+请绘制「一张图分两区」，覆盖 `interface.md` **§5～§7**：
+
+1. **`any` 与 `interface{}`**：完全等价别名；能装任意类型，**不**自带运算能力。
+2. **类型断言**：单返回值失败 panic；双返回值 `ok` 形式不 panic。
+3. **`type switch`**：`x` 必须是接口类型；`case nil` 只匹配**接口本身 nil**，与「动态类型为 `*T` 且指针值为 nil」不同。
+
+画面布局建议：
+
+1. 左上：`any ≡ interface{}`。
+2. 右上：两个小分支：`x.(T)` 与 `x.(T), ok`。
+3. 下半：`switch x.(type)` 画分支树，`case nil` 单独高亮，旁边注释「与 *T 的 nil 不同」。
+
+**输出**：保存为 `Excalidraw/interface.any_断言_typeSwitch.md`
+
+---
+
+## 使用说明
+
+- 配图文件建议放在本目录下 `Excalidraw/`，文件名与上各节 **输出** 一致，便于和 [[interface]]、`[[interface源码]]` 双向链接。
+- 请遵守仓库内 `excalidraw-diagram` 技能的 frontmatter 与画布规范。

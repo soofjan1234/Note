@@ -40,6 +40,9 @@ func consume(r Reader) {
 	_, _ = r.Read(nil)
 }
 ```
+
+![](Excalidraw/interface.概览_隐式实现_双分量.png)
+
 ---
 
 ## 2. 接口值 = 动态类型 + 动态值
@@ -84,6 +87,8 @@ r = f 表示接口里记着「我现在是一个 fileReader」，并且里面存
 - **值副本地址**：如 `int/struct` 装进接口，常见是拷贝后由 `data` 指向
 - **原指针值**：如 `*T` 装进接口，`data` 通常就是这根指针
 - **静态区地址**：小整数/空串/nil slice 等优化场景，`data` 可指向只读或零值区域
+
+![](Excalidraw/interface.eface与iface与data.png)
 
 **例 1：非指针值放进接口**
 
@@ -132,6 +137,7 @@ var i any = p
 因此 `i != nil`（接口整体不是「空接口值」），但 `i.(*S)` 解出来仍是 `nil` 指针。这是「装着 nil 指针的接口」与「接口本身为 nil」的经典区分，详见下文 **§4**。
 
 ### 3.2 主线：接口值是怎么“建出来并调用”的
+![](Excalidraw/interface.构建主线_getitab_itabInit_派发.png)
 
 1. **赋值到接口**
    - `var i any = x` 或 `var r Reader = v`
@@ -158,11 +164,15 @@ var i any = p
    - 非空接口值里是 `iface{tab: *itab, data: ...}`；`tab` 指向上面建好的 `itab`。
    - 编译器为本次调用选定**接口方法下标** `i`（与 `I` 的方法声明顺序一致），执行时从 `itab.Fun[i]` 取出代码地址，以 `data` 作为接收者数据源做**间接调用**（动态派发）。直观上可记成「查表 + 跳转」，不必和手写虚表一一对应。
 
+
+
 一句话总结：**接口调用 = 类型信息（`_type/itab`）+ `data` + `Fun[]` 方法跳转表。**
 
 ---
 
 ## 4. 经典坑：`nil` 接口 vs「装着 nil 指针的接口」
+
+![](Excalidraw/interface.nil接口与nil指针对比.png)
 
 在 Go 里，`error` 大致等价于下面这样的接口：
 
@@ -204,8 +214,9 @@ func okPattern() error {
 
 处理错误时，不要只依赖 `err == nil`，需要区分「有没有包装类型」时，用 **`errors.Is` / `errors.As`** 等更稳妥。
 
-
 ---
+
+![](Excalidraw/interface.any_断言_typeSwitch.png)
 
 ## 5. `any` 与空接口 `interface{}`
 
