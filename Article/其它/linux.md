@@ -70,3 +70,13 @@ pkill -f "java -jar app.jar"   # -f：对「整条命令行」做匹配
 注意：shebang 必须是文件第一行，前面不能有空行或 BOM 干扰（有的编辑器会加 UTF-8 BOM，会导致 shebang 失效）。
 
 shebang 是告诉操作系统**「这个文本文件该交给哪个解释器执行」；不写也能在终端里手动 bash foo.sh 跑，但当可执行脚本直接 ./foo.sh 时**，就需要它（或你每次都显式写解释器）
+
+## linux查看cpu、内存使用率和磁盘io的命令
+
+top、free -h、 df -h
+
+## 权限类型：
+
+r：读 w：写 x：执行
+
+所有者、所属组、其他用户
