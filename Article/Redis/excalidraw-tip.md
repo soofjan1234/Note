@@ -112,12 +112,39 @@
     - **关键**：画一个内存页，主进程修改时产生副本 (Copy)，子进程读取原始页写入 `.rdb`。
     - **标注**：「不阻塞主线程」、「快照镜像」。
 
-### 2. AOF 重写流程 (时序图 / 流程图)
-- **元素**：`AOF Buffer`、`AOF Rewrite Buffer`、`Child Process`、`New AOF File`。
-- **逻辑**：
-    - 重写期间新命令双写：写入原 AOF 缓冲 + 重写缓冲。
-    - 子进程根据内存镜像生成新 AOF。
-    - 最后合并重写缓冲，替换旧文件。
+### 2. AOF 重写流程图（建议直接按流程图画）
+- **流程主线（自上而下）**：
+    - `开始重写（BGREWRITEAOF）`
+    - `fork 子进程`
+    - `子进程按内存快照写 New AOF.tmp`
+    - `子进程完成通知主进程`
+    - `主进程追加 AOF Rewrite Buffer 到 New AOF.tmp`
+    - `atomic rename：New AOF.tmp -> New AOF`
+    - `结束`
+- **并行分支（挂在 fork 后，画为侧边分支）**：
+    - `主进程继续处理写请求`
+    - `每条新命令双写：AOF Buffer + AOF Rewrite Buffer`
+    - `AOF Buffer -> write -> Page Cache -> fsync/回写 -> Old AOF`
+- **子进程写盘链路（挂在“写 New AOF.tmp”节点下）**：
+    - `Child Process -> write -> Page Cache -> fsync/回写 -> New AOF.tmp`
+- **怎么连线（箭头文案可直接写）**：
+    - `Client Write Command -> AOF Buffer`：`每条写命令`
+    - `Client Write Command -> AOF Rewrite Buffer`：`重写期间增量命令`
+    - `AOF Buffer -> Page Cache`：`write old AOF`
+    - `Page Cache -> Old AOF`：`fsync / 回写`
+    - `Child Process -> Page Cache`：`write new AOF.tmp`
+    - `Page Cache -> New AOF.tmp`：`fsync / 回写`
+    - `AOF Rewrite Buffer -> New AOF.tmp`：`append tail commands`
+    - `New AOF.tmp -> New AOF (after rename)`：`atomic rename`
+- **步骤文案（图旁注释）**：
+    - `1) fork 后，子进程按内存快照重写新 AOF 主体`
+    - `2) 主进程继续处理请求，并双写 AOF Buffer + Rewrite Buffer`
+    - `3) 所有写文件先到 Page Cache，再按策略落盘`
+    - `4) 子进程结束后，主进程补写 Rewrite Buffer 到新文件尾部`
+    - `5) rename 原子替换旧 AOF，完成切换`
+- **视觉区分建议**：
+    - 普通写路径用蓝色实线，重写补尾用橙色虚线，最终替换用绿色粗线。
+    - 在 `AOF Rewrite Buffer` 旁加注：`只在重写窗口期存在`。
 
 ---
 

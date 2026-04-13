@@ -7,3 +7,6 @@ venv
 
 
 .obsidian/workspace.json
+
+*.mov
+*.mp4
