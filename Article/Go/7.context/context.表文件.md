@@ -44,7 +44,7 @@ description: 理解 context 的语义与相互关系
 | `WithValue(parent, key, val)` | 增加一层 value 包装 | 不改变取消/截止：完全跟着 parent | `Value(key)`：就近覆盖（先查当前层，再向父链找） |
 
 
-![Excalidraw/context.概览_接口_根节点_构造器](context.概览_接口_根节点_构造器.png)
+![Excalidraw/context.概览_接口_根节点_构造器](Excalidraw/context.概览_接口_根节点_构造器.png)
 
 ---
 
@@ -85,7 +85,20 @@ Value还有个功能：查找最近可取消祖先。当系统需要把“取消
 提示：普通业务只需关心“取消会沿父链传下去”，不需要自己去用 Value 做“最近可取消祖先”的查询。
 
 
-![Excalidraw/context.Value.代码示例_与_向上查找](context.Value.代码示例_与_向上查找.png)
+![Excalidraw/context.Value.代码示例_与_向上查找](Excalidraw/context.Value.代码示例_与_向上查找.png)
+
+### 4.3 什么值存context，什么值放外面参数
+
+1. 适合放进 Context 的（仍要克制）
+    - 取消与超时：WithCancel / WithTimeout / WithDeadline 带来的能力，本来就要靠 ctx 往下传。
+    - 跨层传递、又不想每层加形参的「请求级元数据」：例如 request_id、trace_id、鉴权后在中间件里塞的 user id / tenant（若团队约定统一从 ctx 取）。
+    - 原则：少、稳定、文档化；不要当「万能参数袋」。
+官方和社区常见态度：能不用 Value 就不用；能用显式参数就不要塞进 Value。
+
+2. 适合放在函数参数里的
+    - 业务输入：订单号、金额、查询条件、分页、选项结构体等——这是 f 的契约的一部分，调用方应一眼能从签名看懂。
+    - 依赖/策略：若某种行为可选，用参数或 Options 结构体，而不是 ctx.Value("mode")。
+    - 会在单测里频繁改动的：参数更好 mock、更好读。
 
 ---
 
@@ -118,12 +131,13 @@ func users(ctx context.Context, req *Request) {
 ```
 
 
-![Excalidraw/context.Cancel.心智模型](context.Cancel.心智模型.png)
+![Excalidraw/context.Cancel.心智模型](Excalidraw/context.Cancel.心智模型.png)
 
 ### 5.1 创建可取消的子节点，并接入父链
 当你从一个父上下文创建“可取消”的子上下文时：
 父级一旦取消，子级也会跟着取消。
 你也可以自己手动取消子级，让它立刻停下。
+取消向下传播，不向上冒泡。
 
 ### 5.2 向上查找最近可取消祖先（取消接入时的查找规则）
 当你把“子上下文”接到“父上下文”的取消体系里时，系统会找到离你最近的那个“确实能响应取消的父级”，然后把自己接到它那里。

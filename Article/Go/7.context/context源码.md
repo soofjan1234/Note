@@ -255,28 +255,7 @@ func (c *cancelCtx) propagateCancel(parent Context, child canceler) {
 }
 ```
 
-上面的propagateCancel是cancelCtx实现的方法
-
-```go
-// A cancelCtx can be canceled. When canceled, it also cancels any children
-// that implement canceler.
-type cancelCtx struct {
-	Context
-
-	mu       sync.Mutex            // protects following fields
-	done     atomic.Value          // of chan struct{}, created lazily, closed by first cancel call
-	children map[canceler]struct{} // set to nil by the first cancel call
-	err      atomic.Value          // set to non-nil by the first cancel call
-	cause    error                 // set to non-nil by the first cancel call
-}
-
-// 关 channel、设 err、递归取消所有 children、从 parent 里移除自己
-func (c *cancelCtx) cancel(removeFromParent bool, err, cause error) {
-	...
-}
-```
-
-上文说的用value来**寻找最近的一个“可取消的祖先”**
+parentCancelCtx里，上文说的用 value 来**寻找最近的一个“可取消的祖先”**：
 
 ```go
 func parentCancelCtx(parent Context) (*cancelCtx, bool) {
@@ -295,6 +274,67 @@ func parentCancelCtx(parent Context) (*cancelCtx, bool) {
 	return p, true
 }
 ```
+
+上面的propagateCancel是cancelCtx实现的方法
+
+```go
+// A cancelCtx can be canceled. When canceled, it also cancels any children
+// that implement canceler.
+type cancelCtx struct {
+	Context
+
+	mu       sync.Mutex            // protects following fields
+	done     atomic.Value          // of chan struct{}, created lazily, closed by first cancel call
+	children map[canceler]struct{} // set to nil by the first cancel call
+	err      atomic.Value          // set to non-nil by the first cancel call
+	cause    error                 // set to non-nil by the first cancel call
+}
+
+// cancel：关闭 c.done、递归取消所有子节点；若 removeFromParent 为 true，再从父的 children map 里删掉 c。
+// 首次取消时写入 err/cause；重复调用是 no-op。
+func (c *cancelCtx) cancel(removeFromParent bool, err, cause error) {
+	if err == nil {
+		panic("context: internal error: missing cancel error")
+	}
+	if cause == nil {
+		cause = err
+	}
+	c.mu.Lock()
+	if c.err.Load() != nil {
+		c.mu.Unlock()
+		return // 已经取消过，幂等
+	}
+	c.err.Store(err)
+	c.cause = cause
+	d, _ := c.done.Load().(chan struct{})
+	if d == nil {
+		c.done.Store(closedchan) // 从未有人调 Done() 拉取过 chan，直接用全局已关闭 channel
+	} else {
+		close(d) // 已有真实 chan，关掉让 <-Done() 全部返回
+	}
+	for child := range c.children {
+		child.cancel(false, err, cause) // 子节点递归取消；false = 不要子再去 parent 里删自己（下面已 children=nil）
+	}
+	c.children = nil
+	c.mu.Unlock()
+
+	if removeFromParent {
+		removeChild(c.Context, c) // 从「可取消父」的 children map 里摘掉自己，避免泄漏引用
+	}
+}
+```
+
+**参数 `err` 与 `cause`**
+
+- `err`：`c.Err()` 对外返回的值，如 `Canceled`、`DeadlineExceeded`。
+- `cause`：给 `Cause(ctx)` 用；若为 `nil`，源码里会 **`cause = err`**。`WithCancelCause` 时可单独传 cause，便于链路上带「为什么取消」。
+
+**`removeFromParent` 何时为 true / false**
+
+- **`true`**：一般是用户调用 `WithCancel` 返回的 `cancel()`，或 `timerCtx` 超时回调里那次——需要把自己从父 context 的 `children` 里 `delete` 掉，否则父一直挂着已结束的子，**泄漏**。
+- **`false`**：父在 `cancel` 里遍历 `children` 调用 `child.cancel(false, …)` 时——子只要把自己 subtree 清掉即可，**不能**让子再去父的 map 里删自己（此时父还持锁在遍历，且父马上会 `children = nil`）；以及内部传播路径上避免重复逻辑。
+
+
 
 ## WithDeadline、WithTimeout
 

@@ -27,7 +27,7 @@ Go 运行时有死锁检测：当所有 goroutine 都无法再取得进展（例
 
 fatal error: all goroutines are asleep - deadlock!
 
-![空 select 永久阻塞](select.空select永久阻塞.png)
+![空 select 永久阻塞](Excalidraw/select.空select永久阻塞.png)
 
 ### 配合 `default` 可以实现非阻塞收发
 
@@ -39,13 +39,13 @@ fatal error: all goroutines are asleep - deadlock!
       fmt.Println("no data, do something else")
   }
   ```
-![带 default 非阻塞对比](select.带default.非阻塞对比.png)
+![带 default 非阻塞对比](Excalidraw/select.带default.非阻塞对比.png)
 
 ---
 
 ## 实现要点
 
-![selectgo.主路径](selectgo.主路径.png)
+![selectgo.主路径](Excalidraw/selectgo.主路径.png)
 
 ### 如何匹配 channel case
 

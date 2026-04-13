@@ -43,17 +43,17 @@ func TryAdd() bool {
      - `Unlock()` 用它判断：到底需不需要走唤醒逻辑，以及在某些慢路径里如何更新等待队列状态。
 2. `sema`：运行时用的 **信号量**（让拿不到锁的 goroutine 能“睡眠/被唤醒”），避免一直空转。
 
-![sync.Mutex内部结构](sync.Mutex.概览与state.png)
+![sync.Mutex内部结构](excalidraw/sync.Mutex.概览与state.png)
 
 ### Lock()
 
-![sync.Mutex加锁流程](sync.Mutex.Lock流程.png)
+![sync.Mutex加锁流程](excalidraw/sync.Mutex.Lock流程.png)
 
 1. **快路径：直接 CAS 抢锁**
    - 通常 mutex 为空闲时，`Lock()` 会很快把 `state` 从“未上锁”改成“上锁”，抢成功就直接返回。
    - 这里的 `CAS`（Compare-And-Swap）是一个原子操作：先比较内存里的旧值是否等于你期望的旧值；相等就把它替换成新值；不相等就失败，从而走慢路径（比如自旋或睡眠）。
 2. **慢路径：抢不到就处理竞争**
-  1. **短暂再试一下（自旋）**
+  1. **不是饥饿模式，短暂再试一下（自旋）**
     - 降低调度成本：从运行队列摘下、进等待队列，再被 `Unlock` 唤醒、重新调度，有时比**多空转几轮**还贵。
     - 如果 mutex 还处在“正常模式”（没开 `starving`），runtime 可能让你先空转几轮，看看持锁的 goroutine 会不会马上 `Unlock()`。
   2. **登记自己：把“我在等”写进 state**
@@ -83,7 +83,7 @@ func TryAdd() bool {
 
 
 ### Unlock()
-![sync.Mutex解锁流程](sync.Mutex.Unlock流程.png)
+![sync.Mutex解锁流程](excalidraw/sync.Mutex.Unlock流程.png)
 
 1. **快路径：没人在等就直接解锁**
    - `Unlock()` 会把 `state` 里的“锁占用”那一位清掉，让大家看到：这把锁空了。
@@ -119,4 +119,4 @@ sema初始化的值是多少？
 
 依赖 Go 的零值规则为0。也就是：一开始没有“许可”（permit），竞争时第一个拿不到锁的 goroutine 会进入睡眠
 
-![sema语义](sync.Mutex.sema语义.png)
+![sema语义](excalidraw/sync.Mutex.sema语义.png)
