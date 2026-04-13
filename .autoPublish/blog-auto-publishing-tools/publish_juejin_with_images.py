@@ -2,7 +2,7 @@ import os
 import re
 import sys
 import time
-from urllib.parse import unquote
+from urllib.parse import unquote, urlparse
 
 import pyperclip
 import selenium
@@ -10,6 +10,7 @@ from selenium import webdriver
 from selenium.webdriver import Keys, ActionChains
 from selenium.common.exceptions import (
     InvalidSessionIdException,
+    NoSuchElementException,
     NoSuchWindowException,
     TimeoutException,
     WebDriverException,
@@ -36,6 +37,8 @@ except Exception:
 
 
 TITLE_PLACEHOLDER = "\u8f93\u5165\u6587\u7ae0\u6807\u9898..."
+# 部分页面 placeholder 文案可能微调，作兜底匹配
+TITLE_PLACEHOLDER_XPATH_FUZZY = '//input[contains(@placeholder, "\u6587\u7ae0\u6807\u9898") or contains(@placeholder, "\u6807\u9898")]'
 PUBLISH_TEXT = "\u53d1\u5e03"
 PUBLISH_ARTICLE_TEXT = "\u53d1\u5e03\u6587\u7ae0"
 TAG_PLACEHOLDER = "\u8bf7\u641c\u7d22\u6dfb\u52a0\u6807\u7b7e"
@@ -294,6 +297,42 @@ def init_driver(common_config):
     return driver
 
 
+def _urls_same_page(current: str, expected: str) -> bool:
+    """
+    是否为同一页面：scheme、host、path 一致（path 去尾 /；忽略 query、fragment）。
+    用于判断当前标签是否已是创作者中心，避免重复 driver.get。
+    """
+    a, b = urlparse((current or "").strip()), urlparse((expected or "").strip())
+    if a.scheme.lower() != b.scheme.lower() or a.netloc.lower() != b.netloc.lower():
+        return False
+    pa = (a.path or "/").rstrip("/").lower()
+    pb = (b.path or "/").rstrip("/").lower()
+    return pa == pb
+
+
+def switch_to_creator_tab_if_exists(driver, site: str) -> bool:
+    """
+    若任一标签的 URL 已与 site 视为同一页，则切换过去并返回 True。
+    队列第二篇起可复用上一篇留在后台的创作者中心标签，少开新标签、少一次整页加载。
+    """
+    handles = list(driver.window_handles)
+    if not handles:
+        return False
+    fallback = handles[-1]
+    for h in reversed(handles):
+        try:
+            driver.switch_to.window(h)
+            if _urls_same_page(driver.current_url, site):
+                return True
+        except Exception:
+            continue
+    try:
+        driver.switch_to.window(fallback)
+    except Exception:
+        pass
+    return False
+
+
 def open_new_tab_safe(driver):
     """
     Open a new tab robustly across Selenium/Chrome edge cases.
@@ -320,29 +359,100 @@ def open_new_tab_safe(driver):
     driver.switch_to.window(driver.window_handles[-1])
 
 
+def _find_title_input_locator():
+    """精确 placeholder + 模糊 placeholder，兼容掘金小幅改版。"""
+    return (
+        (By.XPATH, f'//input[@placeholder="{TITLE_PLACEHOLDER}"]'),
+        (By.XPATH, TITLE_PLACEHOLDER_XPATH_FUZZY),
+    )
+
+
+def _wait_title_on_current_tab(driver, per_tab_wait: WebDriverWait):
+    for by, loc in _find_title_input_locator():
+        try:
+            per_tab_wait.until(EC.presence_of_element_located((by, loc)))
+            return True
+        except TimeoutException:
+            continue
+    return False
+
+
+def find_title_input_element(driver):
+    """发布流程里填标题：精确 placeholder 优先，否则模糊匹配。"""
+    for by, loc in _find_title_input_locator():
+        try:
+            return driver.find_element(by, loc)
+        except NoSuchElementException:
+            continue
+    raise NoSuchElementException("未找到文章标题输入框")
+
+
 def goto_juejin_editor(driver, site, wait, max_retry=2):
     """
     Open creator home and enter editor page robustly.
+
+    第二篇及以后常见问题：点击「写文章」后可能**同标签**进入编辑器，也可能**新开标签**；
+    若始终 switch 到最后一个句柄，可能仍停在创作者首页。这里会枚举新开的标签，
+    并在当前及所有标签中查找标题输入框。
     """
+    per_tab = WebDriverWait(driver, 12)
     for attempt in range(1, max_retry + 1):
-        driver.get(site)
-        time.sleep(2)
-        wait.until(EC.presence_of_element_located((By.CLASS_NAME, "send-button")))
-        driver.find_element(By.CLASS_NAME, "send-button").click()
-        time.sleep(2)
-        driver.switch_to.window(driver.window_handles[-1])
+        # 已在创作者中心则不再整页跳转，减少「重复打开」感；若无 send-button 再强制刷新
+        if not _urls_same_page(driver.current_url, site):
+            driver.get(site)
+            time.sleep(2)
+        else:
+            time.sleep(0.3)
         try:
-            wait.until(
-                EC.presence_of_element_located(
-                    (By.XPATH, f'//input[@placeholder="{TITLE_PLACEHOLDER}"]')
-                )
-            )
-            return
+            wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "send-button")))
         except TimeoutException:
-            if attempt < max_retry:
-                print(f"Editor not ready, retry entering editor ({attempt}/{max_retry})...")
+            driver.get(site)
+            time.sleep(2)
+            wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "send-button")))
+        btn = driver.find_element(By.CLASS_NAME, "send-button")
+        try:
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", btn)
+        except Exception:
+            pass
+        time.sleep(0.3)
+        handles_before = set(driver.window_handles)
+        try:
+            btn.click()
+        except Exception:
+            driver.execute_script("arguments[0].click();", btn)
+        time.sleep(1.5)
+
+        handles_after = driver.window_handles
+        new_tabs = [h for h in handles_after if h not in handles_before]
+
+        # 优先：本次点击新开的标签（从后往前，一般是最后一个新开的）
+        try_order = list(reversed(new_tabs)) if new_tabs else [handles_after[-1]]
+        # 兜底：其余标签也扫一遍（多标签残留时，避免切错）
+        for h in handles_after:
+            if h not in try_order:
+                try_order.append(h)
+
+        seen = set()
+        ordered = []
+        for h in try_order:
+            if h not in seen:
+                seen.add(h)
+                ordered.append(h)
+
+        for h in ordered:
+            try:
+                driver.switch_to.window(h)
+            except Exception:
                 continue
-            raise
+            if _wait_title_on_current_tab(driver, per_tab):
+                return
+
+        if attempt < max_retry:
+            print(f"Editor not ready, retry entering editor ({attempt}/{max_retry})...")
+            continue
+        raise TimeoutException(
+            "掘金编辑器未就绪：已点击 send-button，但在当前浏览器所有标签中都未找到文章标题输入框。"
+        )
 
 
 def publish_juejin_with_images(driver, content=None, title_override=None, summary_override=None):
@@ -354,10 +464,14 @@ def publish_juejin_with_images(driver, content=None, title_override=None, summar
     front_matter = parse_front_matter(common_config["content"])
     auto_publish = common_config["auto_publish"]
 
-    open_new_tab_safe(driver)
     wait = WebDriverWait(driver, 10)
-    # 已登录时直接打开创作者中心并进入编辑器，超时会自动重试。
-    goto_juejin_editor(driver, juejin_config["site"], wait, max_retry=2)
+    site = juejin_config["site"]
+    # 优先复用已有「创作者中心」标签，避免每篇都新开标签再 get 一次（减少重复打开）
+    if switch_to_creator_tab_if_exists(driver, site):
+        print("Reusing existing tab: creator home (same URL as configured site).")
+    else:
+        open_new_tab_safe(driver)
+    goto_juejin_editor(driver, site, wait, max_retry=2)
 
     content_file_path = os.path.abspath(os.path.normpath(common_config["content"]))
 
@@ -394,7 +508,7 @@ def publish_juejin_with_images(driver, content=None, title_override=None, summar
     ActionChains(driver).key_down(cmd_ctrl).send_keys("v").key_up(cmd_ctrl).perform()
     time.sleep(3)
 
-    title = driver.find_element(By.XPATH, f'//input[@placeholder="{TITLE_PLACEHOLDER}"]')
+    title = find_title_input_element(driver)
     title.clear()
     if front_matter and front_matter.get("title"):
         title.send_keys(front_matter["title"])
