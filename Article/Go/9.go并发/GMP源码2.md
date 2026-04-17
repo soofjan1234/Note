@@ -23,8 +23,6 @@
 1. `findRunnable()` 找一个可运行 G。
 2. `execute(gp, inheritTime)` 执行它。
 
-真正复杂的是 `findRunnable` 的“找活顺序”。
-
 ### 1.1 `findRunnable` 的常见查找顺序
 
 可简化为：
@@ -69,7 +67,7 @@ func findRunnable() (gp *g, inheritTime, tryWakeP bool) {
 
 ---
 
-## 2. 触发调度：三条典型路径
+## 2. 触发调度：四条典型路径
 
 ### 2.1 正常调度
 
@@ -147,6 +145,29 @@ func ready(gp *g, traceskip int, next bool) {
     wakep()
 }
 ```
+
+**网络阻塞和普通阻塞的区别**
+
+相同点：两者都会让 `G` 从 `_Grunning` 进入 `_Gwaiting`，随后被唤醒为 `_Grunnable`，再进入 run queue 等待执行。
+
+不同点主要在“挂哪儿、谁唤醒”：
+
+1. 普通阻塞（channel/锁/sleep）
+
+- 挂载位置：channel 的收发队列、mutex/sema 等待队列、timer 等待结构。
+- 唤醒来源：通常是其他 `G` 的同步操作或定时器到期。
+- 典型路径：`gopark -> goready/ready -> runqput -> (可能 wakep)`。
+
+2. 网络阻塞（netpoll）
+
+- 挂载位置：fd 对应的 pollDesc / netpoll 关注结构。
+- 唤醒来源：内核 I/O 就绪事件（可读/可写）。
+- 典型路径：`gopark` 挂起后，netpoll 收到事件，把就绪 `G` 注入可运行队列（本质上也是回到 runnable 再被调度）。
+
+一句话：**普通阻塞等“运行时内部条件”，网络阻塞等“内核外部事件”；但最终都会收敛到同一调度闭环。**
+
+#### 2.4 抢占调度和系统调用
+抢占调度和系统调用，详情见下文
 
 ---
 
@@ -449,21 +470,6 @@ func exitsyscall0(gp *g) {
 ```
 
 细节（`trace`、统计、`gc` 门槛等）以当前版本的 `proc.go` 为准；拎主线记这三步即可：**快路径抢 P → 慢路径入全局队列 → `stopm`/`schedule` 或 `acquirep`+`execute`**。
-
----
-
-## 5. 全文状态流转（最小记忆版）
-
-业务 G 常见几条线可对照记：
-
-| 场景 | 状态要点 |
-|------|----------|
-| 正常跑在用户代码 | `_Grunning` |
-| `gopark`（channel / 锁 / sleep 等） | `_Grunning` → `_Gwaiting`；`goready` 后经 `_Grunnable` 再被调度回 `_Grunning` |
-| 阻塞型 syscall（`entersyscall` 等路径） | 常经历 **`_Gsyscall`**；语义上与「等在 channel 上」的 `_Gwaiting` 不同 |
-| syscall 返回 | `_Gsyscall` → 优先 **`exitsyscall` 快路径**绑回 P；失败则 `_Grunnable` 进全局队列再等调度 |
-
-若只记最短链：`_Grunning` →（等待）`_Gwaiting` →（就绪）`_Grunnable` → `_Grunning`。**系统调用**另记一条：**进出内核会解绑/回收 P，`exitsyscall` 有快慢路径**（本文第 4 节）。
 
 ---
 

@@ -52,12 +52,16 @@ type gobuf struct {
 
 ### M（Machine）
 
-一个操作系统线程；与调度强相关的两个 G：
+一个操作系统线程
 
 ```go
 type m struct {
 	g0   *g // 持有调度栈的 goroutine（运行时线程在 g0 上跑调度逻辑）
 	curg *g // 在当前线程上运行的用户 goroutine
+
+	p               puintptr // 这条线程当前绑定的 P（processor）
+	nextp           puintptr // 即将绑定的 P
+	oldp            puintptr // 进系统调用前绑定的 P
 	// ...
 }
 ```
@@ -72,22 +76,48 @@ type m struct {
 type p struct {
 	m muintptr
 
-	// 本地运行队列
+	// 本地运行队列（固定长度 256，多数访问无锁）
 	runqhead uint32
 	runqtail uint32
 	runq     [256]guintptr
-	runnext  guintptr // 优先于 runq 的一个槽位
 
-	// 空闲 G 的本地缓存，执行完的 G 可放回这里复用
-	gFree gList
+	runnext  guintptr // 优先于 runq 跑的下一个 G（例如被当前 G ready 的 G
 
+	// 各类缓存 比如
+	mcache      *mcache // 小对象缓存
+	pcache      pageCache // 页级缓存
+	gFree gList // 空闲 G 的本地缓存，执行完的 G 可放回这里复用
+	deferpool    []*_defer // 复用 _defer，执行 defer 时少 malloc
+	deferpoolbuf [32]*_defer
 	// ...
 }
 ```
 
-### schedt（Scheduler Type）
+**和内存管理相关**
+1. mcache
+- 是什么：每个 P 自带的一块小对象分配缓存，和调度里的「每个 P 一份资源」是同一套思路。
+- 干什么用：分配很小的对象时，优先从本 P 的 mcache 里拿，减少去全局堆 / 中心结构抢锁，分配路径更快。
+- 和 GMP 的关系：G 在 M 上跑，M 绑 P，所以业务 goroutine 做小对象分配时，往往走的是当前 P 的 mcache，和调度器把计算绑在 P 上是一致的。
 
-全局调度中心：全局 G 队列、空闲 M / P 链表、自旋计数等。
+2. pageCache
+- 是什么：挂在 P 上的页级缓存，按「页」为单位缓存从堆上拿到的内存。
+- 干什么用：需要向堆申请/归还整页时，先在本 P 的 pageCache 里周转，减少频繁进全局分配器，和 mcache 一样是「本地快路径」。
+- 和 mcache 的区别（直觉）：mcache 更偏按 size class 的小对象；pageCache 更偏页这一层的批量与缓存，粒度更大。
+
+
+### 全局变量
+```go
+var (
+	sched      schedt    
+	
+	m0         m         // 是主线程的 M 结构体，用于初始化调度器和运行时的其余部分
+	g0         g         // g0 负责执行与 Goroutine 调度相关的底层操作，例如切换上下文、栈切换等
+)
+```
+
+**schedt（Scheduler Type）**
+
+全局调度中心：全局 G 队列、空闲 M / P 链表等。
 
 ```go
 type schedt struct {
@@ -95,13 +125,9 @@ type schedt struct {
 
 	midle        muintptr // 空闲 M 链表
 	nmidle       int32    // 空闲 M 数量
-	nmidlelocked int32    // 被锁定、正在收尾等场景的 M 计数
-	mnext        int64    // 下一个创建的 M 的 ID
-	maxmcount    int32    // 允许存在的 M 上限
 
 	pidle      puintptr // 空闲 P 链表
 	npidle     uint32   // 空闲 P 数量
-	nmspinning uint32   // 处于自旋找任务的 M 数量
 
 	// 全局可运行 G 队列
 	runq     gQueue
@@ -114,18 +140,45 @@ type schedt struct {
 		noStack gList // 不带栈的 G
 	}
 
-	sudoglock  mutex
-	sudogcache *sudog
-
-	deferlock mutex
-	deferpool *_defer
 	// ...
 }
 ```
 
+
+### 为啥G、M、P互相指来指去的
+
+核心原因：**调度热路径要“常数时间定位 + 少锁”**。
+
+1. **快速拿到当前运行关系**
+
+- `m.curg -> g`：线程立刻知道“我当前在跑哪个 goroutine”
+- `g.m -> m`：goroutine 立刻知道“我挂在哪个线程上”
+- `m.p -> p` / `p.m -> m`：线程与执行资源绑定时，O(1) 找到对方
+
+2. **调度切换时要同时改多方状态**
+
+例如 `G` 从 `_Grunning` 变 `_Gwaiting`，`M` 要切下一个 `G`，`P` 的 `runq/runnext` 也可能变化。  
+有了互指，切换路径可以直接改相关对象，不用先查全局结构再定位。
+
+3. **减少全局锁竞争**
+
+如果只靠全局表（如 `gid -> m`、`mid -> p`），高频调度下会大量加锁/原子操作。  
+“本地直连指针 + 少量原子位”是 runtime 常见的性能手段。
+
+4. **便于处理动态迁移场景**
+
+在 `syscall` / `cgo` / 抢占 / `park-unpark` 过程中，`G-M-P` 关系会暂时断开或迁移。  
+明确的互指关系让 runtime 能快速判断：谁持有 `P`、谁可抢占、谁应该入队。
+
+> 这不是永久强绑定，而是“瞬时运行关系”：  
+> 常态是 `G` 跑在某个 `M` 上、`M` 持有某个 `P`；调度时三者都可能变化（如 `M` 进 syscall 丢 `P`，`P` 被其他 `M` 接管，`G` 迁移到别的 `M/P`）。
+
+一句话：互指不是为了增加耦合，而是为了在高频调度路径上做到**低延迟、低锁开销**。
+
 ---
 
-## 0. 一眼看全流程
+## 调度流程
+一眼看全流程
 
 主流程可以先背成这条链：
 
@@ -137,23 +190,67 @@ type schedt struct {
 4. 当前线程 **`mstart` 说“我开始上班”**
 5. 进入 **`schedule` 这个大循环**：每一圈先 **`findRunnable` 找一个能干活的 G**，找到了就 **`execute` 真正去跑它**。跑不下去（让出、阻塞、被抢占等）又会回到 `schedule`，周而复始。
 
----
+### 0. 真正的入口：runtime·rt0_go
+Go程序的真正启动函数 runtime·rt0_go，会经历几件关键事：
 
-## 1. 启动阶段：先把调度器搭起来
-
-程序启动后，会经历几件关键事：
-
-1. 初始化 `m0` 和 `g0`。
+1. 初始化 `m0` 和 `g0`，绑定 g0 和 m0。
 2. `schedinit` 完成调度器、内存、GC、P 等初始化。
 3. 按 `GOMAXPROCS` 设置 P 的数量（`procresize`）。
-4. `newproc` 创建第一个业务 goroutine。
+4. `newproc` 创建第一个业务 goroutine，并塞进队列。
 5. `mstart` 进入调度循环。
 
 这里最关键的理解是：**Go 先把「舞台」搭好（M/P/sched），再把业务 G 推上台。**
 
+```s
+// src/runtime/asm_arm64.s
+TEXT runtime·rt0_go(SB),NOSPLIT|TOPFRAME,$0
+	// SP = stack; R0 = argc; R1 = argv
+
+	SUB	$32, RSP
+	MOVW	R0, 8(RSP) // argc
+	MOVD	R1, 16(RSP) // argv
+
+...
+
+MOVD	$runtime·m0(SB), R0
+// 绑定 g0 和 m0
+MOVD	g, m_g0(R0)
+MOVD	R0, g_m(g)
+
+...
+
+BL	runtime·args(SB)
+BL	runtime·osinit(SB)
+BL	runtime·schedinit(SB)
+
+ // 创建一个新的 goroutine 来启动程序
+MOVD	$runtime·mainPC(SB), R0
+// ...
+BL	runtime·newproc(SB)
+
+ // 开始启动调度器的调度循环
+BL	runtime·mstart(SB)
+
+...
+
+DATA	runtime·mainPC+0(SB)/8,$runtime·main<ABIInternal>(SB) // main函数入口地址
+GLOBL	runtime·mainPC(SB),RODATA,$8
+
+```
+
+---
+
+### 1. 启动阶段：先把调度器搭起来
 
 ```go
 // src/runtime/proc.go
+// The bootstrap sequence is:
+//
+//	call osinit
+//	call schedinit
+//	make & queue new G
+//	call runtime·mstart
+
 // 调度器初始化
 func schedinit() {
     ...
@@ -182,6 +279,10 @@ func schedinit() {
     ...
 }
 ```
+
+**GOMAXPROCS**
+GOMAXPROCS表示 Go 调度器里可同时运行 Go 代码的 P 的数量上限，也就是同一时刻能并行跑多少个 goroutine
+默认通常是机器可用 CPU 核数（更准确是 runtime 看到的可用 CPU 数）。
 
 ---
 
@@ -262,7 +363,6 @@ retry:
 	if gp.stack.lo == 0 {
 		...
 	} else {
-		// ⑤ 有栈 → 只做 race / msan / asan 相关处理（辅助发现内存与并发问题）
 		...
 	}
 	return gp
