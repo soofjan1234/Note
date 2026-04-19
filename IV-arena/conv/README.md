@@ -36,7 +36,8 @@ python transcribe.py <你的文件路径>
 无需手动切换环境，直接执行：
 ```bash
 export KMP_DUPLICATE_LIB_OK=TRUE  # macOS 必填，防止 OpenMP 报错
-conda run -n iv-helper-speech python transcribe.py /path/to/your/video.mp4
+cd /Users/Zhuanz/projects/OtherWS/Note/IV-arena/conv
+conda run -n iv-helper-speech python transcribe.py 
 ```
 
 ### 3. 先提取音频再转录 (处理超大视频推荐)
