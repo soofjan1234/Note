@@ -19,4 +19,4 @@
     3. 命令 go build -gcflags="-m -m" √
 5. map并发安全 √
 
-更新GMP channel
+更新GMP channel √

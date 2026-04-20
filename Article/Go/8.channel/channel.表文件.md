@@ -138,8 +138,6 @@ if !ok {
 _ = v
 ```
 
-
-
 ## 常见情况
 
 ![channel.常见情况](channel.常见情况.png)
