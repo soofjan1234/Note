@@ -1,0 +1,76 @@
+% !TEX TS-program = xelatex
+% !TEX encoding = UTF-8 Unicode
+% !Mode:: "TeX:UTF-8"
+
+\documentclass{resume}
+\usepackage{zh_CN-Adobefonts_external}
+\usepackage{linespacing_fix}
+\usepackage{cite}
+
+\begin{document}
+\pagenumbering{gobble}
+
+\name{侯汶政｜Go后端工程师}
+
+\section{\faInfoCircle\ 基本信息}
+\vspace{0.5ex} % 增加一点间距避免拥挤
+\begin{center}
+\begin{tabular}{p{0.45\textwidth} p{0.45\textwidth}}
+    \textbf{个人网站：}\href{https://Soofjan.com}{Soofjan.com}\\
+    
+    \textbf{微信：}1489938120          & \textbf{当前状态：}深圳在职 \\
+    \textbf{邮箱：}Soofjan1489938120@gmail.com & \textbf{到岗时间：}\textbf{2周} \\
+    \textbf{学历：}全日制（\textbf{学信网可查}） & \textbf{求职偏好：}不外包 / 不驻场 \\
+\end{tabular}
+\end{center}
+
+\section{\faGraduationCap\ 教育背景}
+\datedsubsection{\textbf{广州大学} \quad 学士，计算机科学与技术}{2019.09 -- 2023.06}
+CET-6 英语六级（602分），全国大学生算法设计与编程挑战赛（银奖）
+
+\section{\faCogs\ 技术能力}
+\begin{itemize}[parsep=0.3ex]
+    \item \textbf{编程语言与框架}：使用 Go（Gin、Gorm） 开发，系统掌握 关键字、并发、GMP 调度、内存管理等知识；拥有 Vue 实战经验，具备多端适应能力。
+    \item \textbf{数据存储与缓存}：掌握 MySQL 存储引擎（InnoDB）、B+ 树索引、锁与事务（ACID、隔离级别、MVCC）；掌握 Redis 底层数据结构以及内部实现，熟悉过期策略、持久化、缓存等相关问题。
+    \item \textbf{中间件}：熟悉 NSQ 架构，能处理消息丢失与重复消费；了解Kafka、RocketMQ等消息队列在不同场景下的使用选择。
+    \item \textbf{开发工具}：熟悉 Git/Linux 开发环境；熟悉 TCP/IP、HTTP/HTTPS 等网络基础；高效使用 Cursor AI 工具。
+  
+\end{itemize}
+
+\section{\faSuitcase\ 工作经历}
+\datedsubsection{\textbf{软件工程师 @ 慧为智能科技有限公司}}{2023.05 - 至今}
+
+\paragraph*{私有云存储系统（NAS）开发}
+% \mbox{} \\
+% \textcolor{gray}{ \textbf{技术栈：} Go, Vue, C++, MySQL, SQLite, NSQ, AES+RSA, ElasticSearch, Docker  }
+
+\begin{itemize}
+
+    \item \textbf{云端}：
+    \begin{itemize}
+        \item 主导设计 NAT 穿透交互架构，规范客户端、服务端、云端及穿透端的通信流程，实现复杂网络下稳定高效访问。
+        \item 通过 NSQ 消息队列异步削峰、rate 限流保护与 Ristretto 热点缓存 的组合优化，在活动流量下将写入链路峰值提升至 QPS 3k+，并保障系统稳定性。
+        \item 采用应用层 AES+RSA 和传输层 TLS 的双层加密方案，保障凭证与敏感字段在复杂网络下的传输安全。
+    \end{itemize}
+
+    \item \textbf{智能文档中心}：
+    \begin{itemize}
+        \item 针对内存受限环境，完成了从 Elasticsearch 到 Bleve 的搜索引擎迁移，结合GPT 语义扩展与高性能缓存，实现快速的全文与多维度检索。
+        \item 针对超长文档，设计了基于块的索引策略与搜索结果聚合算法，为用户提供了具备高上下文关联性的“搜索高亮快照”。
+    \end{itemize}
+
+    \item \textbf{文件索引同步系统}：
+    \begin{itemize}
+        \item 自研 BFS+Queue 架构替代 fsnotify 监听，在海量文件场景下内存开销降低 90\% 以上。
+        \item 基于接口抽象与 Functional Options 模式，实现同步逻辑与底层存储、IO 的深度解耦，支持跨项目的高内聚集成。
+    \end{itemize}
+
+    \item \textbf{其他}：
+    \begin{itemize}
+        \item AI相册: 通过xxx实现分类；通过 DBSCAN 聚类算法实现万级人脸库的无监督聚类，支持动态聚类中心更新，识别准确率达 97.3\%。
+        \item 开发并维护 Docker、虚拟机、Webdav 等前后端项目，提供 NAS 生态支持。
+    \end{itemize}
+
+\end{itemize}
+
+\end{document}
