@@ -1,82 +1,67 @@
-## 1. 知道正在运行的项目名字，如何知道端口
+# Linux 常考题
 
-思路：**先确认进程名/PID，再查该进程监听了哪些端口**（或反过来用端口反查进程）。
+## 1. 知道项目名，怎么查端口？
 
-**用 `ss`（推荐，现代发行版常见）**
-
-```bash
-# 按名字过滤（进程名在最后一列 user:("name",pid=...)）
-sudo ss -tulnp | grep -i 你的项目名或关键字
-```
-
-**用 `lsof`**
-
-```bash
-sudo lsof -i -P -n | grep -i 进程名或关键字
-# 或已知 PID：
-sudo lsof -i -P -n -p PID
-```
-
-**先 PID 再端口**
-
-```bash
-pgrep -a 进程名          # 或 ps aux | grep ...
-sudo ss -tulnp | grep pid=12345
-```
-
-## 2. `kill`、`pkill -f` 和 `kill -9` 的区别
-
-**先分清两件事**：`kill` / `pkill` 是**怎么选中进程**；`-9` 是**发什么信号**（可和 `kill` 或 `pkill` 组合）。
-
-### `kill`（按 PID）
-
-```bash
-kill 1234          # 默认 SIGTERM（15）
-kill -9 1234       # SIGKILL（9）
-```
-
-- 必须知道 **PID**（`ps`、`pgrep` 等先查）。
-- 默认 **SIGTERM（15）**：进程可捕获、做清理后退出；忽略或卡死时可能迟迟不结束。
-- **`kill -9`**：发 **SIGKILL**，内核强杀，**不可捕获**；无清理机会，可能半写文件、锁未释放等，**应作为最后手段**。
-
-### `pkill`（按名字/模式匹配）
-
-```bash
-pkill nginx                    # 匹配「进程名」含 nginx 的（实现依系统，常等价于 comm）
-pkill -f "java -jar app.jar"   # -f：对「整条命令行」做匹配
-```
-
-- **不用先查 PID**，按模式结束**一个或多个**进程，写脚本省事。
-- **`-f`**：关键字出现在完整启动命令里才算（适合 `java -jar xxx`、`python main.py` 这种）；**没有 `-f`** 时往往只比进程名，容易误杀或杀不到。
-- 默认同样发 **SIGTERM**；要强杀可 **`pkill -9 -f '...'`**（同样慎用）。
-- 模式写太宽会**误杀**，先用 **`pgrep -f '...'`** 看会命中哪些 PID，再 `pkill`。
-
-### 对照小结
-
-|  | 选中方式 | 默认信号 | 注意 |
+| 工具 | 核心用途 | 优点 | 缺点 |
 | --- | --- | --- | --- |
-| `kill PID` | 精确 PID | SIGTERM | 一次一个 PID；可 `kill 1 2 3` |
-| `pkill -f 模式` | 命令行子串 | SIGTERM | 可能多进程；先 `pgrep -f` 核对 |
-| `kill -9` / `pkill -9` | 同上 | **SIGKILL** | 强杀，最后手段 |
+| `ps -ef` | 看进程详情 | 能看到完整启动路径和参数 | 结果杂乱，常包含 `grep` 自身 |
+| `pgrep` | 拿进程 PID | 结果简洁，适合脚本调用 | 看不到详细启动参数 |
+| `netstat` | 看网络端口 | 普及率高，老系统常见 | 性能较差，新系统可能缺失 |
+| `ss` | 看网络详情 | 性能更好，信息更底层 | 部分老旧系统可能没装 |
 
-## 3. shell脚本的第一行
-第一行一般是：#!/bin/bash或：#!/usr/bin/env bash
+## 2. `kill`、`pkill -f`、`kill -9` 区别？
+- `kill PID`：按 PID 发信号，默认 `SIGTERM`（可清理退出）。
+- `pkill -f pattern`：按完整命令行匹配，可能匹配多个进程。
+- `-9`：`SIGKILL`，强制终止，不可捕获，最后手段。
 
-作用：告诉系统用哪个解释器执行这个脚本（#! 叫 shebang）。
+## 3. 脚本第一行（shebang）作用？
+告诉系统用哪个解释器执行脚本。
 
-#!/bin/bash：固定用 /bin/bash。
-#!/usr/bin/env bash：在 PATH 里找 bash，换机器时路径更灵活。
+```bash
+#!/bin/bash
+#!/usr/bin/env bash
+```
 
-注意：shebang 必须是文件第一行，前面不能有空行或 BOM 干扰（有的编辑器会加 UTF-8 BOM，会导致 shebang 失效）。
+前者路径固定，后者更便携（从 `PATH` 找 bash）。
 
-shebang 是告诉操作系统**「这个文本文件该交给哪个解释器执行」；不写也能在终端里手动 bash foo.sh 跑，但当可执行脚本直接 ./foo.sh 时**，就需要它（或你每次都显式写解释器）
+## 4. Linux 权限 `rwx` 和 `755` 是什么？
+- 权限位：`r` 读，`w` 写，`x` 执行。
+- 三组身份：所有者 / 所属组 / 其他人。
+- `755 = rwx r-x r-x`，`644 = rw- r-- r--`。
 
-## linux查看cpu、内存使用率和磁盘io的命令
+## 5. `chmod`、`chown` 区别？
+- `chmod`：改权限位。
+- `chown`：改文件所有者和组。
 
-top、free -h、 df -h
+```bash
+chmod 755 app.sh
+chown user:group file.txt
+```
 
-## 权限类型：
+## 6. 如何查看 CPU、内存、磁盘使用？
 
-r：读 w：写 x：执行
+```bash
+top            # 或 htop，实时查看系统的整体负载、CPU 占用、内存消耗以及进程列表
+free -h  #  内存使用情况
+df -h  #  磁盘使用情况
+du -sh *  #  文件和目录的大小
+```
 
-所有者、所属组、其他用户
+## 7. 线程和进程区别？
+- 进程：资源分配基本单位，地址空间独立。
+- 线程：CPU 调度基本单位，共享进程内存。
+- 线程切换开销通常小于进程切换。
+
+## 8. 如何查某端口被谁占用？
+
+```bash
+ss -lntp | rg :8080
+lsof -i :8080
+```
+
+## 9. 查看日志常用命令？
+
+```bash
+journalctl -u nginx -f
+tail -f /var/log/nginx/access.log
+```
