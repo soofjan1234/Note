@@ -2,8 +2,7 @@
 title: Go 关键字：defer / panic & recover / make & new
 description: 用几页纸彻底吃透这几个最容易踩坑、又最常用的 Go 关键字。
 ---
-
-## 二、defer：用“倒序执行”收尾
+## 一、defer：用“倒序执行”收尾
 
 ### 1. defer 是什么？
 
@@ -43,12 +42,12 @@ func readFile(name string) error {
 
 ---
 
-## 三、panic & recover：Go 的“异常”机制
+## 二、panic & recover：Go 的“异常”机制
 
 ### 1. panic：程序进入“异常”状态
 
-- 可以**主动调用**：`panic("something wrong")`
-- 也可以由运行时触发：例如数组越界、空指针等
+- 可以主动调用：`panic("something wrong")`
+- 也可以由运行时触发：例如**数组越界、空指针**等
 
 一旦某个函数里发生 `panic`：
 
@@ -59,7 +58,7 @@ func readFile(name string) error {
 
 > 注意：**panic 自己不打印任何东西**，真正打印信息的是最外层 `runtime`。
 
-另外，对于标准 Go 编译器，有些错误是**无法被 recover 捕获的**（比如栈溢出、OOM 等），程序会直接崩溃。
+另外，对于标准 Go 编译器，有些错误是无法被 recover 捕获的（比如**栈溢出、OOM**等），程序会直接崩溃。
 
 ### 2. recover：从 panic 中“拉回现场”
 
@@ -98,7 +97,6 @@ func safeRun(fn func()) {
 - 返回 `*T`（指向这块零值内存的指针）。
 
 示例：
-
 ```go
 type User struct {
     Name string

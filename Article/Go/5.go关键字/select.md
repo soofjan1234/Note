@@ -47,8 +47,6 @@ fatal error: all goroutines are asleep - deadlock!
 
 ![selectgo.主路径](Excalidraw/selectgo.主路径.png)
 
-### 如何匹配 channel case
-
 编译器把各 case 编成 scase 数组并调用 selectgo。匹配分两类：
 
 - 快路径：在已持有各 channel 锁的前提下，按随机打乱后的 pollorder 依次尝试。谁能立刻收发（对端在等待、缓冲区可读写、或读到关闭）就选中谁并做完，返回该 case 下标。
@@ -58,7 +56,10 @@ fatal error: all goroutines are asleep - deadlock!
 
 > 每个 sudog 里有一个 g 指针，指向正在阻塞在这条路上的那个 G（goroutine）
 
-### 饿死与公平性
+### 为什么需要 pollorder 
 
-若总是按固定顺序检查 case，长期可能让排在后面的 case 很少被轮到。runtime 用 pollorder 随机插入打乱本轮检查顺序，使各 case 在「先被尝试」上更均匀，减轻饥饿。
+饿死与公平性：若总是按固定顺序检查 case，长期可能让排在后面的 case 很少被轮到。runtime 用 pollorder 随机插入打乱本轮检查顺序，使各 case 在「先被尝试」上更均匀，减轻饥饿。
 
+### 为什么需要 lockorder
+
+加锁顺序：selectgo 按 lockorder 顺序加锁，避免死锁。同一 channel 连续出现时只加一次锁，避免重复加锁。
