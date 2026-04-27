@@ -44,7 +44,6 @@ chown user:group file.txt
 top            # 或 htop，实时查看系统的整体负载、CPU 占用、内存消耗以及进程列表
 free -h  #  内存使用情况
 df -h  #  磁盘使用情况
-du -sh *  #  文件和目录的大小
 ```
 
 ## 7. 线程和进程区别？
