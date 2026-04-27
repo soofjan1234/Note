@@ -31,7 +31,7 @@ Go Map 1.24做了点适配：
 
 - **核心架构**：为了避免大 Map 在扩容时因“全量搬迁”导致的瞬间卡顿，Go 将 Map 拆分成了多个独立的 **Table**
 - **路由中心**：Map 持有一个 **Directory（目录）**，它本质上是一个指向各个 Table 的指针数组。
-- **优化：**当元素非常小时，Directory会指向一个单独的组Group，并将表长度置为0。
+- **优化**：当元素非常小时，Directory会指向一个单独的组Group，并将表长度置为0。
 
 ## 1. GlobalDepth和LocalDepth
 ![[Pasted image 20260417114140.png]]
