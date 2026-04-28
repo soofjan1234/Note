@@ -19,6 +19,13 @@ default:
 }
 ```
 
+select的用途：
+1. **多路复用（Multiplexing）**：同时监听多个 channel 的读写状态，谁先准备好就处理谁。
+2. **非阻塞收发**：配合 `default` 分支，当所有 channel 都未就绪时立即执行 `default`，避免协程由于等待 channel 而阻塞。
+3. **超时控制**：结合 `time.After(duration)` 使用，为某个操作设置生命周期，防止程序永久阻塞。
+4. **取消/停止信号监听**：配合 `context.Done()` 或自定义的 `quit` channel 实现 goroutine 的优雅退出。
+5. **事件循环**：常驻 `for { select { ... } }` 模式中，作为消息中心的处理器（Dispatcher）。
+
 ### 空 select 与死锁
 
 对于空的 select {}（没有任何 case），当前 goroutine 会一直阻塞，没有可等待的 channel、定时器等。
