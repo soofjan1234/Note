@@ -1,8 +1,3 @@
-## 为什么使用 NSQ
-
-当前场景是不需要 Kafka 级别的高吞吐和分布式日志存储。
-NSQ，一个去中心化的消息队列，部署简单（单二进制、无外部依赖）、延迟低、Go 原生支持好，和项目规模、吞吐需求匹配。
-
 ## 对比 Kafka、RokectMQ、RabbitMQ、Redis Stream、NSQ
 
 ![](Excalidraw/NSQ对比图.png)

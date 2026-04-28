@@ -19,6 +19,7 @@ default:
 }
 ```
 
+![](Excalidraw/select/select.用途.png)
 select的用途：
 1. **多路复用（Multiplexing）**：同时监听多个 channel 的读写状态，谁先准备好就处理谁。
 2. **非阻塞收发**：配合 `default` 分支，当所有 channel 都未就绪时立即执行 `default`，避免协程由于等待 channel 而阻塞。
@@ -34,7 +35,7 @@ Go 运行时有死锁检测：当所有 goroutine 都无法再取得进展（例
 
 fatal error: all goroutines are asleep - deadlock!
 
-![空 select 永久阻塞](Excalidraw/select.空select永久阻塞.png)
+![空 select 永久阻塞](Excalidraw/select/select.空select永久阻塞.png)
 
 ### 配合 `default` 可以实现非阻塞收发
 
@@ -46,13 +47,13 @@ fatal error: all goroutines are asleep - deadlock!
       fmt.Println("no data, do something else")
   }
   ```
-![带 default 非阻塞对比](Excalidraw/select.带default.非阻塞对比.png)
+![带 default 非阻塞对比](Excalidraw/select/select.带default.非阻塞对比.png)
 
 ---
 
 ## 实现要点
 
-![selectgo.主路径](Excalidraw/selectgo.主路径.png)
+![selectgo.主路径](Excalidraw/select/selectgo.主路径.png)
 
 编译器把各 case 编成 scase 数组并调用 selectgo。匹配分两类：
 
